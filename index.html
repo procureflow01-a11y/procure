@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal do Fornecedor | e-Procurement</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --primary-color: #0284c7;
+    --bg-gradient-start: #1151e7;
+    --bg-gradient-end: #2b4672;
+    --panel: rgba(30, 41, 59, 0.72);
+    --panel-dark: rgba(15, 23, 42, 0.6);
+    --border: rgba(255, 255, 255, 0.1);
+    --muted: #94a3b8;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top right, var(--bg-gradient-start), var(--bg-gradient-end));
+    background-attachment: fixed;
+    min-height: 100vh;
+    margin: 0;
+    color: #f8fafc;
+    padding-bottom: 60px;
+}
+
+a { color: #7dd3fc; }
+
+.topbar {
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 26px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.topbar .brand {
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topbar .brand i { color: var(--primary-color); }
+
+.topbar .nav-link {
+    color: #cbd5e1;
+    font-size: 0.9rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.topbar .nav-link:hover,
+.topbar .nav-link.active {
+    background: rgba(2, 132, 199, 0.18);
+    color: #fff;
+}
+
+.user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--panel-dark);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: #cbd5e1;
+    font-size: 0.8rem;
+}
+
+.user-badge i { color: var(--primary-color); }
+
+.card-glass {
+    background: var(--panel);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 26px;
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.28);
+    margin-bottom: 22px;
+}
+
+.card-glass h5,
+.card-glass h4 { font-weight: 700; letter-spacing: -0.4px; }
+
+.section-sub { color: var(--muted); font-size: 0.88rem; }
+
+.form-label { font-size: 0.82rem; color: #cbd5e1; margin-bottom: 4px; font-weight: 500; }
+
+.form-control, .form-select {
+    background: rgba(15, 23, 42, 0.75);
+    border: 1px solid var(--border);
+    color: #f1f5f9;
+    border-radius: 10px;
+}
+
+.form-control:focus, .form-select:focus {
+    background: rgba(15, 23, 42, 0.95);
+    color: #fff;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
+}
+
+.form-control::placeholder { color: #64748b; }
+
+.btn-primary {
+    background: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.btn-primary:hover { background: #0369a1; }
+
+.btn-outline-light, .btn-outline-secondary {
+    border-radius: 10px;
+    border-color: var(--border);
+    color: #e2e8f0;
+}
+
+.table {
+    color: #e2e8f0;
+    --bs-table-bg: transparent;
+    --bs-table-color: #e2e8f0;
+    --bs-table-striped-color: #e2e8f0;
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.03);
+    --bs-table-hover-color: #fff;
+    --bs-table-hover-bg: rgba(2, 132, 199, 0.12);
+}
+
+.table thead th {
+    color: var(--muted);
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid var(--border);
+}
+
+.table td, .table th { border-color: rgba(255, 255, 255, 0.06); vertical-align: middle; }
+
+.badge-status {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.st-pendente   { background: rgba(217, 119, 6, 0.18);  color: #fbbf24; }
+.st-cotacao    { background: rgba(2, 132, 199, 0.18);  color: #38bdf8; }
+.st-cotada     { background: rgba(22, 163, 74, 0.18);  color: #4ade80; }
+.st-cancelada  { background: rgba(220, 38, 38, 0.18);  color: #f87171; }
+.st-respondido { background: rgba(22, 163, 74, 0.18);  color: #4ade80; }
+.st-enviado    { background: rgba(2, 132, 199, 0.18);  color: #38bdf8; }
+.st-convidado  { background: rgba(100, 116, 139, 0.22); color: #cbd5e1; }
+
+.empty-state { text-align: center; color: var(--muted); padding: 34px 10px; }
+.empty-state i { font-size: 2rem; opacity: 0.5; display: block; margin-bottom: 10px; }
+
+.toast-box {
+    position: fixed; top: 18px; right: 18px; z-index: 1080;
+    display: flex; flex-direction: column; gap: 10px; max-width: 380px;
+}
+
+.toast-item {
+    background: rgba(15, 23, 42, 0.96);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary-color);
+    color: #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.86rem;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+}
+
+.key-box {
+    font-size: 1.05rem; letter-spacing: 3px; font-weight: 700;
+    background: rgba(15, 23, 42, 0.85); border: 1px dashed var(--primary-color);
+    padding: 6px 14px; border-radius: 8px; display: inline-block; color: #7dd3fc;
+}
+
+.modal-content {
+    background: #0f172a;
+    color: #e2e8f0;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+}
+
+.modal-header, .modal-footer { border-color: var(--border); }
+
+.footer-text { text-align: center; color: rgba(255,255,255,0.45); font-size: 0.76rem; margin-top: 26px; }
+
+.drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 14px;
+    padding: 26px;
+    text-align: center;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .25s ease;
+}
+
+.drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--primary-color);
+    background: rgba(2, 132, 199, 0.08);
+    color: #e2e8f0;
+}
+
+.kpi {
+    background: var(--panel-dark);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+}
+
+.kpi .val { font-size: 1.6rem; font-weight: 700; }
+.kpi .lbl { color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: .6px; }
+
+.best-price { color: #4ade80; font-weight: 700; }
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <span class="brand"><i class="fa-solid fa-cart-shopping"></i> Portal do Fornecedor</span>
+    <span class="ms-auto section-sub" id="lblFornecedor"></span>
+</div>
+
+<div class="container my-4" style="max-width: 1100px">
+
+    <div id="configAlert" class="alert alert-warning d-none">
+        Preencha <code>SUPABASE_URL</code> e <code>SUPABASE_ANON_KEY</code> no topo do bloco de script deste arquivo.
+    </div>
+
+    <!-- ------------------- acesso por chave ------------------- -->
+    <div class="card-glass" id="boxChave">
+        <h5><i class="fa-solid fa-key me-2" style="color:var(--primary-color)"></i>Acessar cotação</h5>
+        <p class="section-sub">Informe a chave de acesso que você recebeu por e-mail.</p>
+        <form class="row g-2" onsubmit="buscarCotacao(event)">
+            <div class="col-sm-8">
+                <input id="inpChave" class="form-control text-uppercase" placeholder="Ex.: A1B2C3D4E5"
+                       style="letter-spacing:3px" autocomplete="off" required>
+            </div>
+            <div class="col-sm-4 d-grid">
+                <button class="btn btn-primary" type="submit"><i class="fa-solid fa-unlock me-2"></i>Abrir cotação</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ------------------- cotação ------------------- -->
+    <div id="boxCotacao" class="d-none">
+
+        <div class="card-glass">
+            <div class="d-flex flex-wrap align-items-start gap-3">
+                <div>
+                    <h5 class="mb-1" id="rfqNumero"></h5>
+                    <div class="section-sub" id="rfqInfo"></div>
+                </div>
+                <div class="ms-auto text-end">
+                    <span class="badge-status" id="rfqStatus"></span>
+                    <div class="section-sub mt-2" id="rfqObs"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-glass">
+            <h6 class="mb-3"><i class="fa-solid fa-table-list me-2" style="color:var(--primary-color)"></i>Itens para cotação</h6>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead><tr>
+                        <th style="width:26%">Descrição</th><th>Especificação</th>
+                        <th class="text-end" style="width:90px">Qtde</th><th style="width:70px">Un.</th>
+                        <th style="width:140px">Preço unit. (R$)</th><th style="width:110px">Prazo (dias)</th>
+                        <th style="width:130px">Marca</th><th class="text-end" style="width:130px">Total</th>
+                    </tr></thead>
+                    <tbody id="tbItens"></tbody>
+                    <tfoot><tr><th colspan="7" class="text-end">Total da proposta</th>
+                        <th class="text-end" id="totalGeral">R$ 0,00</th></tr></tfoot>
+                </table>
+            </div>
+            <div class="mt-3">
+                <label class="form-label">Observações gerais da proposta</label>
+                <textarea id="obsGeral" class="form-control" rows="2"
+                    placeholder="Validade da proposta, frete, impostos..."></textarea>
+            </div>
+        </div>
+
+        <div class="card-glass">
+            <h6 class="mb-3"><i class="fa-solid fa-paperclip me-2" style="color:var(--primary-color)"></i>Anexos da proposta</h6>
+            <div class="drop-zone" id="dropZone" onclick="document.getElementById('inpArquivo').click()">
+                <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2"></i>
+                <div>Clique ou arraste arquivos aqui (PDF, Excel, imagens — até 25 MB cada)</div>
+            </div>
+            <input type="file" id="inpArquivo" class="d-none" multiple
+                   accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.png,.jpg,.jpeg,.zip">
+            <ul class="list-unstyled mt-3 mb-0" id="listaAnexos"></ul>
+        </div>
+
+        <div class="d-flex gap-2 mb-4">
+            <button class="btn btn-outline-light" onclick="salvar(false)"><i class="fa-solid fa-floppy-disk me-2"></i>Salvar rascunho</button>
+            <button class="btn btn-primary" id="btnEnviar" onclick="salvar(true)"><i class="fa-solid fa-paper-plane me-2"></i>Enviar proposta</button>
+            <button class="btn btn-outline-light ms-auto" onclick="location.href=location.pathname">Sair</button>
+        </div>
+    </div>
+
+    <div class="footer-text">&copy; 2026 Supply Chain — módulo e-Procurement</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ============================================================
+// CONFIGURAÇÃO — preencha com os dados do seu projeto Supabase
+// (Project Settings > API). A anon key é pública por design.
+// ============================================================
+window.SUPABASE_URL = 'https://SEU-PROJETO.supabase.co';
+window.SUPABASE_ANON_KEY = 'SUA_ANON_KEY_AQUI';
+window.SUPABASE_BUCKET = 'cotacoes';
+</script>
+<script>
+// =============================================================
+// Núcleo compartilhado: cliente Supabase, helpers de UI e sessão
+// =============================================================
+(function () {
+    'use strict';
+
+    if (!window.supabase || !window.supabase.createClient) {
+        console.error('SDK do Supabase não carregado.');
+        return;
+    }
+
+    const configurado =
+        window.SUPABASE_URL &&
+        !window.SUPABASE_URL.includes('SEU-PROJETO') &&
+        window.SUPABASE_ANON_KEY &&
+        !window.SUPABASE_ANON_KEY.includes('SUA_ANON_KEY');
+
+    window.SUPABASE_OK = Boolean(configurado);
+
+    window.db = window.supabase.createClient(
+        window.SUPABASE_URL || 'https://exemplo.supabase.co',
+        window.SUPABASE_ANON_KEY || 'anon'
+    );
+})();
+
+const App = {
+
+    // ------- sessão do Flask (injetada no template) com fallback local -------
+    user() {
+        return window.USUARIO_LOGADO || localStorage.getItem('logged_user') || 'Usuário';
+    },
+
+    role() {
+        return (window.PERFIL_LOGADO || localStorage.getItem('user_role') || '')
+            .trim().toLowerCase();
+    },
+
+    async logout() {
+        try { await fetch('/api/logout', { method: 'POST' }); } catch (e) { /* noop */ }
+        ['logged_user', 'user_role', 'dashboard_access_granted', 'selected_module']
+            .forEach(k => localStorage.removeItem(k));
+        window.location.href = '/login.html';
+    },
+
+    // ---------------- utilidades ----------------
+    money(v) {
+        return (Number(v) || 0).toLocaleString('pt-BR', {
+            style: 'currency', currency: 'BRL'
+        });
+    },
+
+    num(v) {
+        return (Number(v) || 0).toLocaleString('pt-BR', {
+            minimumFractionDigits: 0, maximumFractionDigits: 3
+        });
+    },
+
+    date(v) {
+        if (!v) return '-';
+        const d = new Date(v);
+        return isNaN(d) ? v : d.toLocaleDateString('pt-BR');
+    },
+
+    escape(v) {
+        return String(v === null || v === undefined ? '' : v)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    },
+
+    toast(mensagem, tipo) {
+        const cores = {
+            success: '#16a34a', error: '#dc2626',
+            warning: '#d97706', info: '#0284c7'
+        };
+        let box = document.getElementById('toastBox');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'toastBox';
+            box.className = 'toast-box';
+            document.body.appendChild(box);
+        }
+        const el = document.createElement('div');
+        el.className = 'toast-item';
+        el.style.borderLeftColor = cores[tipo] || cores.info;
+        el.textContent = mensagem;
+        box.appendChild(el);
+        setTimeout(() => el.remove(), 5000);
+    },
+
+    // ---------------- verificação de configuração ----------------
+    guardConfig() {
+        if (window.SUPABASE_OK) return true;
+        const aviso = document.getElementById('configAlert');
+        if (aviso) aviso.classList.remove('d-none');
+        App.toast('Preencha SUPABASE_URL e SUPABASE_ANON_KEY no topo deste arquivo.', 'warning');
+        return false;
+    },
+
+    // ---------------- banco ----------------
+    async run(promise, mensagemErro) {
+        const { data, error } = await promise;
+        if (error) {
+            console.error(error);
+            App.toast((mensagemErro || 'Erro') + ': ' + error.message, 'error');
+            throw error;
+        }
+        return data;
+    }
+};
+
+window.App = App;
+
+</script>
+<script>
+let FORNECEDOR = null, RFQ = null, ITENS = [], RESPOSTAS = {}, ANEXOS = [];
+
+App.guardConfig();
+
+// abre automaticamente quando a chave vem no link do e-mail
+const chaveUrl = new URLSearchParams(location.search).get('chave');
+if (chaveUrl) {
+    document.getElementById('inpChave').value = chaveUrl;
+    buscarCotacao();
+}
+
+// ---------------------------- acesso ----------------------------
+async function buscarCotacao(ev) {
+    if (ev) ev.preventDefault();
+    if (!App.guardConfig()) return;
+
+    const chave = document.getElementById('inpChave').value.trim().toUpperCase();
+    if (!chave) return;
+
+    const { data, error } = await db.from('rfq_fornecedores')
+        .select('*, rfqs(*, rfq_itens(*))')
+        .eq('chave', chave)
+        .maybeSingle();
+
+    if (error) return App.toast('Erro ao buscar cotação: ' + error.message, 'error');
+    if (!data) return App.toast('Chave inválida. Verifique o e-mail recebido.', 'error');
+
+    FORNECEDOR = data;
+    RFQ = data.rfqs;
+    ITENS = (RFQ.rfq_itens || []).slice().sort((a, b) => a.descricao.localeCompare(b.descricao));
+
+    const respostas = await App.run(
+        db.from('cotacao_respostas').select('*').eq('rfq_fornecedor_id', FORNECEDOR.id),
+        'Erro ao carregar respostas anteriores');
+    RESPOSTAS = {};
+    respostas.forEach(r => { RESPOSTAS[r.rfq_item_id] = r; });
+
+    ANEXOS = await App.run(
+        db.from('cotacao_anexos').select('*').eq('rfq_fornecedor_id', FORNECEDOR.id),
+        'Erro ao carregar anexos');
+
+    render();
+}
+
+function render() {
+    document.getElementById('boxChave').classList.add('d-none');
+    document.getElementById('boxCotacao').classList.remove('d-none');
+    document.getElementById('lblFornecedor').textContent = FORNECEDOR.fornecedor + ' | ' + FORNECEDOR.email;
+
+    document.getElementById('rfqNumero').textContent = 'Cotação ' + RFQ.numero;
+    document.getElementById('rfqInfo').innerHTML =
+        `Comprador: <b>${App.escape(RFQ.comprador)}</b> &nbsp;•&nbsp;
+         Prazo de resposta: <b>${App.date(RFQ.prazo_resposta)}</b> &nbsp;•&nbsp;
+         Pagamento: <b>${App.escape(RFQ.condicao_pagto || 'a combinar')}</b>`;
+    document.getElementById('rfqObs').textContent = RFQ.observacoes || '';
+
+    const st = document.getElementById('rfqStatus');
+    st.textContent = FORNECEDOR.status;
+    st.className = 'badge-status ' + (FORNECEDOR.status === 'Respondido' ? 'st-respondido' : 'st-enviado');
+
+    const encerrada = RFQ.status !== 'Aberta';
+    document.getElementById('btnEnviar').disabled = encerrada;
+    if (encerrada) App.toast('Esta RFQ está ' + RFQ.status.toLowerCase() + ' — não é possível enviar proposta.', 'warning');
+
+    document.getElementById('tbItens').innerHTML = ITENS.map(i => {
+        const r = RESPOSTAS[i.id] || {};
+        return `<tr data-item="${i.id}">
+            <td>${App.escape(i.descricao)}</td>
+            <td class="section-sub">${App.escape(i.especificacao || '-')}</td>
+            <td class="text-end">${App.num(i.quantidade)}</td>
+            <td>${App.escape(i.unidade)}</td>
+            <td><input type="number" min="0" step="0.0001" class="form-control form-control-sm in-preco"
+                       value="${r.preco_unitario != null ? r.preco_unitario : ''}" oninput="recalcular()"></td>
+            <td><input type="number" min="0" step="1" class="form-control form-control-sm in-prazo"
+                       value="${r.prazo_entrega_dias != null ? r.prazo_entrega_dias : ''}"></td>
+            <td><input class="form-control form-control-sm in-marca" value="${App.escape(r.marca || '')}"></td>
+            <td class="text-end tot-item">R$ 0,00</td>
+        </tr>`;
+    }).join('');
+
+    const obsGeral = Object.values(RESPOSTAS).map(r => r.observacao).find(Boolean);
+    document.getElementById('obsGeral').value = obsGeral || '';
+
+    renderAnexos();
+    recalcular();
+}
+
+function recalcular() {
+    let total = 0;
+    document.querySelectorAll('#tbItens tr').forEach(tr => {
+        const item = ITENS.find(i => i.id === tr.dataset.item);
+        const preco = Number(tr.querySelector('.in-preco').value) || 0;
+        const tot = preco * Number(item.quantidade);
+        tr.querySelector('.tot-item').textContent = App.money(tot);
+        total += tot;
+    });
+    document.getElementById('totalGeral').textContent = App.money(total);
+}
+
+// ---------------------------- anexos ----------------------------
+const dropZone = document.getElementById('dropZone');
+['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, ev => {
+    ev.preventDefault(); dropZone.classList.add('dragover');
+}));
+['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => {
+    ev.preventDefault(); dropZone.classList.remove('dragover');
+}));
+dropZone.addEventListener('drop', ev => enviarArquivos(ev.dataTransfer.files));
+document.getElementById('inpArquivo').addEventListener('change', ev => enviarArquivos(ev.target.files));
+
+async function enviarArquivos(fileList) {
+    if (!FORNECEDOR) return;
+    for (const file of fileList) {
+        if (file.size > 25 * 1024 * 1024) {
+            App.toast(file.name + ': arquivo maior que 25 MB.', 'warning');
+            continue;
+        }
+        const seguro = file.name.replace(/[^\w.\-]+/g, '_');
+        const path = `${RFQ.numero}/${FORNECEDOR.id}/${Date.now()}_${seguro}`;
+
+        const { error } = await db.storage.from(window.SUPABASE_BUCKET)
+            .upload(path, file, { upsert: false, contentType: file.type || 'application/octet-stream' });
+        if (error) { App.toast('Falha no upload de ' + file.name + ': ' + error.message, 'error'); continue; }
+
+        const { data: pub } = db.storage.from(window.SUPABASE_BUCKET).getPublicUrl(path);
+
+        try {
+            const anexo = await App.run(db.from('cotacao_anexos').insert({
+                rfq_fornecedor_id: FORNECEDOR.id,
+                nome_arquivo: file.name,
+                path,
+                url: pub ? pub.publicUrl : null,
+                tamanho: file.size
+            }).select().single(), 'Erro ao registrar anexo');
+            ANEXOS.push(anexo);
+            App.toast(file.name + ' anexado.', 'success');
+        } catch (e) { /* toast já exibido */ }
+    }
+    document.getElementById('inpArquivo').value = '';
+    renderAnexos();
+}
+
+function renderAnexos() {
+    document.getElementById('listaAnexos').innerHTML = ANEXOS.length
+        ? ANEXOS.map(a => `
+            <li class="d-flex align-items-center gap-2 mb-2">
+                <i class="fa-regular fa-file" style="color:var(--primary-color)"></i>
+                <a href="${App.escape(a.url || '#')}" target="_blank">${App.escape(a.nome_arquivo)}</a>
+                <span class="section-sub">${((a.tamanho || 0) / 1024).toFixed(0)} KB</span>
+                <button class="btn btn-sm btn-outline-danger ms-auto" onclick="removerAnexo('${a.id}')">
+                    <i class="fa-solid fa-trash"></i></button>
+            </li>`).join('')
+        : '<li class="section-sub">Nenhum arquivo anexado.</li>';
+}
+
+async function removerAnexo(id) {
+    const anexo = ANEXOS.find(a => a.id === id);
+    if (!anexo) return;
+    await db.storage.from(window.SUPABASE_BUCKET).remove([anexo.path]);
+    await App.run(db.from('cotacao_anexos').delete().eq('id', id), 'Erro ao remover anexo');
+    ANEXOS = ANEXOS.filter(a => a.id !== id);
+    renderAnexos();
+    App.toast('Anexo removido.', 'info');
+}
+
+// ---------------------------- salvar ----------------------------
+async function salvar(enviar) {
+    if (!FORNECEDOR) return;
+
+    const obs = document.getElementById('obsGeral').value.trim() || null;
+    const linhas = [...document.querySelectorAll('#tbItens tr')].map(tr => ({
+        rfq_fornecedor_id: FORNECEDOR.id,
+        rfq_item_id: tr.dataset.item,
+        preco_unitario: Number(tr.querySelector('.in-preco').value) || 0,
+        prazo_entrega_dias: tr.querySelector('.in-prazo').value ? Number(tr.querySelector('.in-prazo').value) : null,
+        marca: tr.querySelector('.in-marca').value.trim() || null,
+        observacao: obs,
+        updated_at: new Date().toISOString()
+    }));
+
+    if (enviar && linhas.some(l => !l.preco_unitario)) {
+        return App.toast('Preencha o preço unitário de todos os itens antes de enviar.', 'warning');
+    }
+
+    try {
+        await App.run(
+            db.from('cotacao_respostas').upsert(linhas, { onConflict: 'rfq_fornecedor_id,rfq_item_id' }),
+            'Erro ao salvar preços');
+
+        if (enviar) {
+            await App.run(db.from('rfq_fornecedores').update({
+                status: 'Respondido', respondido_em: new Date().toISOString()
+            }).eq('id', FORNECEDOR.id), 'Erro ao concluir envio');
+            FORNECEDOR.status = 'Respondido';
+            const st = document.getElementById('rfqStatus');
+            st.textContent = 'Respondido';
+            st.className = 'badge-status st-respondido';
+            App.toast('Proposta enviada com sucesso. Obrigado!', 'success');
+        } else {
+            App.toast('Rascunho salvo.', 'info');
+        }
+    } catch (e) { /* toast já exibido */ }
+}
+</script>
+</body>
+</html>
