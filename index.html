@@ -3,12 +3,209 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal do Fornecedor | e-Procurement</title>
+<title>Portal do Fornecedor | ProcureFlow</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="icon" href="/static/img/logo.png" type="image/x-icon">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/eprocurement.css') }}">
+<style>
+:root {
+    --primary-color: #0284c7;
+    --primary-hover: #0369a1;
+    --bg-body: #0f172a;
+    --panel-bg: rgba(30, 41, 59, 0.75);
+    --panel-subtle: rgba(15, 23, 42, 0.6);
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-input: rgba(255, 255, 255, 0.2);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-subtle: #cbd5e1;
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: radial-gradient(circle at top right, #1e293b, #0f172a);
+    min-height: 100vh;
+    margin: 0;
+    color: var(--text-main);
+    padding-bottom: 60px;
+}
+
+a { color: var(--primary-color); text-decoration: none; }
+a:hover { color: #38bdf8; text-decoration: underline; }
+
+.topbar {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+.topbar .brand {
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.4px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topbar .brand i { color: var(--primary-color); }
+
+.card-glass {
+    background: var(--panel-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 26px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 22px;
+}
+
+.card-glass h5, .card-glass h6 {
+    color: #ffffff;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+}
+
+.section-sub {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+}
+
+.form-label {
+    font-size: 0.84rem;
+    color: var(--text-subtle);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.form-control, .form-select {
+    background-color: rgba(15, 23, 42, 0.6);
+    border: 1px solid var(--border-input);
+    color: #ffffff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: rgba(15, 23, 42, 0.85);
+    color: #ffffff;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
+    outline: none;
+}
+
+.form-control::placeholder { color: #64748b; }
+.form-control:disabled { background-color: rgba(15, 23, 42, 0.3); opacity: 0.6; }
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 9px 20px;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
+    color: #ffffff;
+}
+
+.btn-outline-light {
+    background: transparent;
+    border-radius: 10px;
+    border: 1px solid var(--border-input);
+    color: var(--text-subtle);
+    font-weight: 500;
+}
+
+.btn-outline-light:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border-color: #ffffff;
+}
+
+.table {
+    color: var(--text-main);
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-main);
+}
+
+.table thead th {
+    background-color: rgba(15, 23, 42, 0.6);
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 12px;
+}
+
+.table td, .table th {
+    border-color: var(--border-color);
+    vertical-align: middle;
+    padding: 12px;
+}
+
+.badge-status {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.st-respondido { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
+.st-enviado    { background: rgba(2, 132, 199, 0.2); color: #38bdf8; border: 1px solid rgba(2, 132, 199, 0.4); }
+
+.drop-zone {
+    border: 2px dashed var(--border-input);
+    border-radius: 14px;
+    padding: 26px;
+    text-align: center;
+    color: var(--text-muted);
+    background: rgba(15, 23, 42, 0.4);
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--primary-color);
+    background: rgba(2, 132, 199, 0.1);
+    color: #ffffff;
+}
+
+.toast-box {
+    position: fixed; top: 20px; right: 20px; z-index: 1080;
+    display: flex; flex-direction: column; gap: 10px; max-width: 380px;
+}
+
+.toast-item {
+    background: #1e293b;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary-color);
+    color: #ffffff;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.footer-text { text-align: center; color: var(--text-muted); font-size: 0.8rem; margin-top: 28px; }
+</style>
 </head>
 <body>
 
@@ -18,10 +215,6 @@
 </div>
 
 <div class="container my-4" style="max-width: 1100px">
-
-    <div id="configAlert" class="alert alert-warning d-none">
-        Configure <code>static/scripts/supabase-config.js</code> com a URL e a <code>anon key</code> do Supabase.
-    </div>
 
     <!-- ------------------- acesso por chave ------------------- -->
     <div class="card-glass" id="boxChave">
@@ -91,60 +284,110 @@
         <div class="d-flex gap-2 mb-4">
             <button class="btn btn-outline-light" onclick="salvar(false)"><i class="fa-solid fa-floppy-disk me-2"></i>Salvar rascunho</button>
             <button class="btn btn-primary" id="btnEnviar" onclick="salvar(true)"><i class="fa-solid fa-paper-plane me-2"></i>Enviar proposta</button>
-            <button class="btn btn-outline-light ms-auto" onclick="location.href='/cotacao.html'">Sair</button>
+            <button class="btn btn-outline-light ms-auto" onclick="location.reload()"><i class="fa-solid fa-rotate-left me-1"></i>Sair</button>
         </div>
     </div>
 
-    <div class="footer-text">&copy; 2026 Supply Chain — módulo e-Procurement</div>
+    <div class="footer-text">&copy; 2026 ProcureFlow — Módulo e-Procurement</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="{{ url_for('static', filename='scripts/supabase-config.js') }}"></script>
-<script src="{{ url_for('static', filename='scripts/eprocurement-core.js') }}"></script>
 <script>
+// =============================================================
+// Configuração Supabase Standalone
+// =============================================================
+window.SUPABASE_URL = 'https://pxtzkpklfmulmcksypvc.supabase.co';
+window.SUPABASE_ANON_KEY = 'sb_publishable_v985phPTMNuVecO_tKQtPQ_T1laKNp5';
+window.SUPABASE_BUCKET = 'cotacoes';
+
+window.db = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+
+const App = {
+    money(v) {
+        return (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    },
+    num(v) {
+        return (Number(v) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 3 });
+    },
+    date(v) {
+        if (!v) return '-';
+        const d = new Date(v);
+        return isNaN(d) ? v : d.toLocaleDateString('pt-BR');
+    },
+    escape(v) {
+        return String(v === null || v === undefined ? '' : v)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    },
+    toast(mensagem, tipo) {
+        const cores = { success: '#16a34a', error: '#dc2626', warning: '#d97706', info: '#0284c7' };
+        let box = document.getElementById('toastBox');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'toastBox';
+            box.className = 'toast-box';
+            document.body.appendChild(box);
+        }
+        const el = document.createElement('div');
+        el.className = 'toast-item';
+        el.style.borderLeftColor = cores[tipo] || cores.info;
+        el.textContent = mensagem;
+        box.appendChild(el);
+        setTimeout(() => el.remove(), 5000);
+    },
+    async run(promise, mensagemErro) {
+        const { data, error } = await promise;
+        if (error) {
+            console.error(error);
+            App.toast((mensagemErro || 'Erro') + ': ' + error.message, 'error');
+            throw error;
+        }
+        return data;
+    }
+};
+
 let FORNECEDOR = null, RFQ = null, ITENS = [], RESPOSTAS = {}, ANEXOS = [];
 
-App.guardConfig();
-
-// abre automaticamente quando a chave vem no link do e-mail
+// Abre automaticamente quando a chave vem na URL
 const chaveUrl = new URLSearchParams(location.search).get('chave');
 if (chaveUrl) {
-    document.getElementById('inpChave').value = chaveUrl;
+    document.getElementById('inpChave').value = chaveUrl.trim();
     buscarCotacao();
 }
 
-// ---------------------------- acesso ----------------------------
 async function buscarCotacao(ev) {
     if (ev) ev.preventDefault();
-    if (!App.guardConfig()) return;
-
     const chave = document.getElementById('inpChave').value.trim().toUpperCase();
     if (!chave) return;
 
-    const { data, error } = await db.from('rfq_fornecedores')
-        .select('*, rfqs(*, rfq_itens(*))')
-        .eq('chave', chave)
-        .maybeSingle();
+    try {
+        const { data, error } = await db.from('rfq_fornecedores')
+            .select('*, rfqs(*, rfq_itens(*))')
+            .eq('chave', chave)
+            .maybeSingle();
 
-    if (error) return App.toast('Erro ao buscar cotação: ' + error.message, 'error');
-    if (!data) return App.toast('Chave inválida. Verifique o e-mail recebido.', 'error');
+        if (error) return App.toast('Erro ao buscar cotação: ' + error.message, 'error');
+        if (!data) return App.toast('Chave inválida. Verifique o e-mail recebido.', 'error');
 
-    FORNECEDOR = data;
-    RFQ = data.rfqs;
-    ITENS = (RFQ.rfq_itens || []).slice().sort((a, b) => a.descricao.localeCompare(b.descricao));
+        FORNECEDOR = data;
+        RFQ = data.rfqs;
+        ITENS = (RFQ.rfq_itens || []).slice().sort((a, b) => a.descricao.localeCompare(b.descricao));
 
-    const respostas = await App.run(
-        db.from('cotacao_respostas').select('*').eq('rfq_fornecedor_id', FORNECEDOR.id),
-        'Erro ao carregar respostas anteriores');
-    RESPOSTAS = {};
-    respostas.forEach(r => { RESPOSTAS[r.rfq_item_id] = r; });
+        const respostas = await App.run(
+            db.from('cotacao_respostas').select('*').eq('rfq_fornecedor_id', FORNECEDOR.id),
+            'Erro ao carregar respostas anteriores');
+        RESPOSTAS = {};
+        respostas.forEach(r => { RESPOSTAS[r.rfq_item_id] = r; });
 
-    ANEXOS = await App.run(
-        db.from('cotacao_anexos').select('*').eq('rfq_fornecedor_id', FORNECEDOR.id),
-        'Erro ao carregar anexos');
+        ANEXOS = await App.run(
+            db.from('cotacao_anexos').select('*').eq('rfq_fornecedor_id', FORNECEDOR.id),
+            'Erro ao carregar anexos');
 
-    render();
+        render();
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 function render() {
@@ -169,7 +412,6 @@ function render() {
 
     document.getElementById('tbItens').innerHTML = ITENS.map(i => {
         const r = RESPOSTAS[i.id] || {};
-        // Considera "sem item" quando preço zerado e campo sem_item existir, ou quando salvo explicitamente
         const semItem = r.sem_item === true || (r.preco_unitario === 0 && r.sem_item === true);
         return `<tr data-item="${i.id}">
             <td>${App.escape(i.descricao)}</td>
@@ -278,7 +520,7 @@ function renderAnexos() {
     document.getElementById('listaAnexos').innerHTML = ANEXOS.length
         ? ANEXOS.map(a => `
             <li class="d-flex align-items-center gap-2 mb-2">
-                <i class="fa-regular fa-file" style="color:var(--primary-color)"></i>
+                <i class="fa-regular fa-file text-primary"></i>
                 <a href="${App.escape(a.url || '#')}" target="_blank">${App.escape(a.nome_arquivo)}</a>
                 <span class="section-sub">${((a.tamanho || 0) / 1024).toFixed(0)} KB</span>
                 <button class="btn btn-sm btn-outline-danger ms-auto" onclick="removerAnexo('${a.id}')">
@@ -316,12 +558,10 @@ async function salvar(enviar) {
         };
     });
 
-    // Valida preço apenas para itens que o fornecedor diz possuir
     if (enviar && linhas.some(l => !l.sem_item && !l.preco_unitario)) {
         return App.toast('Preencha o preço unitário dos itens que você possui, ou marque "Não possuo" para os demais.', 'warning');
     }
 
-    // Impede envio se TODOS os itens estiverem marcados como "Não possuo"
     if (enviar && linhas.every(l => l.sem_item)) {
         return App.toast('Você marcou todos os itens como "Não possuo". Por favor, informe preço para ao menos um item ou entre em contato com o comprador.', 'warning');
     }
