@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portal do Fornecedor | ProcureFlow</title>
+<title>Portal do Fornecedor | Jacto Portáteis</title>
 <meta name="description" content="Portal de cotação eletrônica para fornecedores. Acesse com a chave recebida por e-mail.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -235,7 +235,26 @@ textarea.form-control { resize: vertical; }
 
 @keyframes slideIn { from { opacity:0; transform:translateX(12px); } to { opacity:1; transform:translateX(0); } }
 
-.footer-text { text-align: center; color: var(--text-muted); font-size: 0.78rem; margin-top: 26px; }
+.footer-text { 
+    text-align: center !important; 
+    color: var(--text-muted); 
+    font-size: 0.78rem; 
+    margin: 32px auto 0 auto; 
+    width: 100%;
+    display: block;
+}
+
+/* ── Remover setas de aumentar/diminuir do campo de número ── */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button,
+.no-spin::-webkit-inner-spin-button,
+.no-spin::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+input[type=number], .no-spin {
+    -moz-appearance: textfield;
+}
 
 /* ── Spinner ── */
 .spinner {
@@ -249,26 +268,29 @@ textarea.form-control { resize: vertical; }
 <body>
 
 <!-- ═══════════════════ TOPBAR ═══════════════════ -->
-<div class="topbar">
-    <span class="brand"><i class="fa-solid fa-cart-shopping"></i> Portal do Fornecedor</span>
-    <span class="ms-auto section-sub" id="lblFornecedor"></span>
+<div class="topbar shadow-sm">
+    <span class="brand fw-bold" style="font-size:1.15rem;"><i class="fa-solid fa-cart-shopping me-2" style="color:var(--primary-color);"></i> Portal do Fornecedor - Jacto Portáteis</span>
+    <span class="ms-auto section-sub fw-semibold text-primary" id="lblFornecedor"></span>
 </div>
 
 <!-- ═══════════════════ CONTENT ═══════════════════ -->
-<div class="container my-4" style="max-width:1100px">
+<div class="container-fluid my-4 px-lg-5" style="max-width:1440px">
 
     <!-- ── Tela de Acesso ── -->
-    <div class="card-glass" id="boxChave">
-        <h5><i class="fa-solid fa-key me-2" style="color:var(--primary-color)"></i>Acessar cotação</h5>
-        <p class="section-sub">Informe a chave de acesso que você recebeu por e-mail.</p>
-        <form class="row g-2" onsubmit="buscarCotacao(event)">
-            <div class="col-sm-8">
-                <input id="inpChave" class="form-control text-uppercase" placeholder="Ex.: A1B2C3D4E5"
-                       style="letter-spacing:3px" autocomplete="off" required>
+    <div class="card-glass shadow-lg border-0" id="boxChave" style="max-width: 650px; margin: 40px auto; border-radius: 16px;">
+        <div class="text-center mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3" style="width:64px; height:64px;">
+                <i class="fa-solid fa-key fa-2x"></i>
             </div>
-            <div class="col-sm-4 d-grid">
-                <button id="btnBuscar" class="btn btn-primary" type="submit">
-                    <i class="fa-solid fa-unlock me-2"></i>Abrir cotação
+            <h4 class="fw-bold text-dark">Acessar Cotação de Fornecedor</h4>
+            <p class="section-sub">Informe a chave de acesso enviada pela equipe de compras no seu e-mail.</p>
+        </div>
+        <form onsubmit="buscarCotacao(event)">
+            <div class="input-group input-group-lg shadow-sm">
+                <input id="inpChave" class="form-control text-uppercase fw-bold text-center border-2" placeholder="Ex.: A1B2C3D4E5"
+                       style="letter-spacing:4px; font-family: monospace;" autocomplete="off" required>
+                <button id="btnBuscar" class="btn btn-primary fw-bold px-4 text-nowrap" type="submit">
+                    <i class="fa-solid fa-unlock me-2"></i>Abrir Cotação
                 </button>
             </div>
         </form>
@@ -277,71 +299,80 @@ textarea.form-control { resize: vertical; }
     <!-- ── Tela de Cotação ── -->
     <div id="boxCotacao" class="d-none">
 
-        <div class="card-glass">
-            <div class="d-flex flex-wrap align-items-start gap-3">
+        <div class="card-glass border-0 shadow-sm mb-4" style="border-radius: 14px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);">
+            <div class="d-flex flex-wrap align-items-center gap-3 p-1">
                 <div>
-                    <h5 class="mb-1" id="rfqNumero"></h5>
-                    <div class="section-sub" id="rfqInfo"></div>
+                    <h4 class="mb-1 fw-bold text-dark" id="rfqNumero"></h4>
+                    <div class="section-sub fs-6" id="rfqInfo"></div>
                 </div>
                 <div class="ms-auto text-end">
-                    <span class="badge-status" id="rfqStatus"></span>
+                    <span class="badge-status shadow-sm px-3 py-2 fs-6" id="rfqStatus"></span>
                     <div class="section-sub mt-2" id="rfqObs"></div>
                 </div>
             </div>
         </div>
 
-        <div class="card-glass">
-            <h6 class="mb-3"><i class="fa-solid fa-table-list me-2" style="color:var(--primary-color)"></i>Itens para cotação</h6>
-            <div class="table-responsive">
-                <table class="table align-middle">
-                    <thead><tr>
-                        <th style="width:26%">Descrição</th><th>Especificação</th>
-                        <th class="text-end" style="width:90px">Qtde</th><th style="width:70px">Un.</th>
-                        <th style="width:140px">Preço unit. (R$)</th><th style="width:110px">Prazo (dias)</th>
-                        <th style="width:130px">Marca</th><th class="text-end" style="width:130px">Total</th>
-                        <th class="text-center" style="width:110px" title="Marque se você não possui este item em estoque">Não possuo</th>
-                    </tr></thead>
+        <div class="card-glass border-0 shadow-sm mb-4" style="border-radius: 14px;">
+            <h5 class="mb-3 fw-bold text-dark"><i class="fa-solid fa-table-list me-2 text-primary"></i>Itens da Cotação</h5>
+            <div class="table-responsive" style="border-radius: 10px; border: 1px solid var(--border-color);">
+                <table class="table align-middle table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:24%">Descrição do Material</th>
+                            <th style="width:20%">Especificação / Modelo</th>
+                            <th class="text-end" style="width:85px">Qtde</th>
+                            <th style="width:65px">Un.</th>
+                            <th style="width:200px" class="text-center">Preço Unitário (R$) *</th>
+                            <th style="width:160px" class="text-center">Prazo (Dias)</th>
+                            <th style="width:150px">Marca Sugerida</th>
+                            <th class="text-end" style="width:140px">Total do Item</th>
+                            <th class="text-center" style="width:100px" title="Marque se você não possui este item em estoque">Não possuo</th>
+                        </tr>
+                    </thead>
                     <tbody id="tbItens"></tbody>
-                    <tfoot><tr>
-                        <th colspan="7" class="text-end">Total da proposta</th>
-                        <th class="text-end" id="totalGeral">R$ 0,00</th>
-                        <th></th>
-                    </tr></tfoot>
+                    <tfoot class="table-light">
+                        <tr>
+                            <th colspan="7" class="text-end fs-6 fw-bold">Total Geral da Proposta:</th>
+                            <th class="text-end text-success fs-5 fw-bold" id="totalGeral">R$ 0,00</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
-            <div class="mt-3">
-                <label class="form-label">Observações gerais da proposta</label>
+            <div class="mt-4">
+                <label class="form-label fw-bold small text-dark mb-1"><i class="fas fa-comment-dots me-1 text-primary"></i> Observações Gerais da Proposta (Opcional):</label>
                 <textarea id="obsGeral" class="form-control" rows="2"
-                    placeholder="Validade da proposta, frete, impostos..."></textarea>
+                    placeholder="Informe validade da proposta, detalhes de frete, impostos ou prazos adicionais..."></textarea>
             </div>
         </div>
 
-        <div class="card-glass">
-            <h6 class="mb-3"><i class="fa-solid fa-paperclip me-2" style="color:var(--primary-color)"></i>Anexos da proposta</h6>
-            <div class="drop-zone" id="dropZone" onclick="document.getElementById('inpArquivo').click()">
-                <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2"></i>
-                <div>Clique ou arraste arquivos aqui (PDF, Excel, imagens — <strong>até 2 MB por arquivo</strong>)</div>
+        <div class="card-glass border-0 shadow-sm mb-4" style="border-radius: 14px;">
+            <h5 class="mb-3 fw-bold text-dark"><i class="fa-solid fa-paperclip me-2 text-primary"></i>Anexos da Proposta</h5>
+            <div class="drop-zone shadow-sm" id="dropZone" onclick="document.getElementById('inpArquivo').click()">
+                <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2 text-primary"></i>
+                <div class="fw-semibold text-dark">Clique ou arraste arquivos de proposta comercial aqui</div>
+                <small class="text-muted">(PDF, Excel, Imagens ou ZIP — <strong>até 2 MB por arquivo</strong>)</small>
             </div>
             <input type="file" id="inpArquivo" class="d-none" multiple
                    accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.png,.jpg,.jpeg,.zip">
             <ul class="list-unstyled mt-3 mb-0" id="listaAnexos"></ul>
         </div>
 
-        <div class="d-flex gap-2 mb-4">
-            <button class="btn btn-outline-light" onclick="salvar(false)">
-                <i class="fa-solid fa-floppy-disk me-2"></i>Salvar rascunho
+        <div class="d-flex gap-3 mb-4 flex-wrap">
+            <button class="btn btn-outline-light px-4 py-2 fw-semibold" onclick="salvar(false)">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Salvar Rascunho
             </button>
-            <button class="btn btn-primary" id="btnEnviar" onclick="salvar(true)">
-                <i class="fa-solid fa-paper-plane me-2"></i>Enviar proposta
+            <button class="btn btn-primary px-5 py-2 fw-bold shadow-sm" id="btnEnviar" onclick="salvar(true)">
+                <i class="fa-solid fa-paper-plane me-2"></i>Enviar Proposta Final
             </button>
-            <button class="btn btn-outline-light ms-auto" onclick="sair()">
+            <button class="btn btn-outline-danger ms-auto px-4 py-2 fw-semibold" onclick="sair()">
                 <i class="fa-solid fa-right-from-bracket me-1"></i>Sair
             </button>
         </div>
 
     </div>
 
-    <div class="footer-text">&copy; 2026 ProcureFlow — módulo e-Procurement</div>
+    <div class="footer-text">&copy; 2026 Supply Chain — Módulo e-Procurement</div>
 </div>
 
 <!-- ═══════════════════ SCRIPTS ═══════════════════ -->
@@ -371,6 +402,20 @@ const App = {
     escape: v => String(v == null ? '' : v)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;')
         .replace(/>/g, '&gt;').replace(/"/g, '&quot;'),
+
+    parseNumber(v) {
+        if (typeof v === 'number') return isNaN(v) ? 0 : v;
+        if (!v) return 0;
+        const clean = String(v).replace(/[^0-9,-]/g, '').replace(',', '.');
+        return parseFloat(clean) || 0;
+    },
+
+    formatDecimal(v) {
+        if (v === null || v === undefined || v === '') return '';
+        const num = Number(v);
+        if (isNaN(num)) return v;
+        return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+    },
 
     toast(mensagem, tipo) {
         const cores = { success: '#15803d', error: '#dc2626', warning: '#d97706', info: '#0284c7' };
@@ -412,6 +457,20 @@ const App = {
         }
     }
 };
+
+function formatarMoedaInput(input) {
+    let val = input.value;
+    val = val.replace(/[^0-9,.]/g, '');
+    input.value = val;
+}
+
+function formatarMoedaBlur(input) {
+    if (!input.value.trim()) return;
+    const num = App.parseNumber(input.value);
+    if (num > 0) {
+        input.value = App.formatDecimal(num);
+    }
+}
 
 /* ============================================================
    BOOT – lê chave da URL automaticamente
@@ -473,9 +532,12 @@ function render() {
     document.getElementById('boxCotacao').classList.remove('d-none');
     document.getElementById('lblFornecedor').textContent = FORNECEDOR.fornecedor + ' | ' + FORNECEDOR.email;
 
+    const compradorRaw = String(RFQ.comprador || '').trim();
+    const compradorNome = compradorRaw.includes('@') ? compradorRaw.split('@')[0] : compradorRaw;
+
     document.getElementById('rfqNumero').textContent = 'Cotação ' + RFQ.numero;
     document.getElementById('rfqInfo').innerHTML =
-        `Comprador: <b>${App.escape(RFQ.comprador)}</b> &nbsp;•&nbsp;
+        `Comprador: <b>${App.escape(compradorNome)}</b> &nbsp;•&nbsp;
          Prazo de resposta: <b>${App.date(RFQ.prazo_resposta)}</b> &nbsp;•&nbsp;
          Pagamento: <b>${App.escape(RFQ.condicao_pagto || 'a combinar')}</b>`;
     document.getElementById('rfqObs').textContent = RFQ.observacoes || '';
@@ -492,28 +554,49 @@ function render() {
         const r      = RESPOSTAS[i.id] || {};
         const semItem = r.sem_item === true;
         const dis    = semItem ? 'disabled' : '';
+        const precoFormatado = (!semItem && r.preco_unitario) ? App.formatDecimal(r.preco_unitario) : '';
+
         return `<tr data-item="${i.id}">
-            <td>${App.escape(i.descricao)}</td>
+            <td class="fw-bold text-dark">${App.escape(i.descricao)}</td>
             <td class="section-sub">${App.escape(i.especificacao || '-')}</td>
-            <td class="text-end">${App.num(i.quantidade)}</td>
-            <td>${App.escape(i.unidade)}</td>
-            <td><input type="number" min="0" step="0.0001" class="form-control form-control-sm in-preco"
-                       value="${(!semItem && r.preco_unitario) ? r.preco_unitario : ''}" oninput="recalcular()"
-                       ${dis} placeholder="0,0000"></td>
-            <td><input type="number" min="0" step="1" class="form-control form-control-sm in-prazo"
-                       value="${(!semItem && r.prazo_entrega_dias != null) ? r.prazo_entrega_dias : ''}"
-                       ${dis} placeholder="dias"></td>
-            <td><input class="form-control form-control-sm in-marca"
-                       value="${App.escape(!semItem ? (r.marca || '') : '')}" ${dis}></td>
-            <td class="text-end tot-item">R$ 0,00</td>
+            <td class="text-end fw-semibold">${App.num(i.quantidade)}</td>
+            <td><span class="badge bg-light text-dark border">${App.escape(i.unidade)}</span></td>
+            <td>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light text-muted fw-semibold" style="font-size:0.8rem;">R$</span>
+                    <input type="text" inputmode="decimal" class="form-control form-control-sm in-preco fw-bold text-end"
+                           style="font-size:0.88rem;"
+                           value="${precoFormatado}"
+                           oninput="formatarMoedaInput(this); recalcular();"
+                           onblur="formatarMoedaBlur(this)"
+                           ${dis} placeholder="0,0000">
+                </div>
+            </td>
+            <td>
+                <div class="input-group input-group-sm">
+                    <input type="text" inputmode="numeric" class="form-control form-control-sm in-prazo text-center fw-semibold no-spin"
+                           value="${(!semItem && r.prazo_entrega_dias != null) ? r.prazo_entrega_dias : ''}"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                           ${dis} placeholder="0">
+                    <span class="input-group-text bg-light text-muted small" style="font-size:0.75rem;">dias</span>
+                </div>
+            </td>
+            <td>
+                <input class="form-control form-control-sm in-marca"
+                       placeholder="Sua marca..."
+                       value="${App.escape(!semItem ? (r.marca || '') : '')}" ${dis}>
+            </td>
+            <td class="text-end fw-bold text-primary tot-item">R$ 0,00</td>
             <td class="text-center">
-                <div class="d-flex flex-column align-items-center gap-1">
-                    <input type="checkbox" class="form-check-input in-semitem"
-                           style="width:1.2em;height:1.2em;cursor:pointer"
+                <div class="form-check form-switch d-flex flex-column align-items-center justify-content-center m-0">
+                    <input class="form-check-input in-semitem m-0" type="checkbox" role="switch"
+                           style="cursor:pointer; width: 2.2em; height: 1.2em;"
                            title="Marque se não possui este item"
                            ${semItem ? 'checked' : ''}
                            onchange="toggleSemItem(this)">
-                    <span class="section-sub" style="font-size:0.7rem">Não possuo</span>
+                    <span class="section-sub mt-1 ${semItem ? 'text-danger fw-bold' : ''}" style="font-size:0.68rem">
+                        ${semItem ? 'Não possuo' : 'Possuo'}
+                    </span>
                 </div>
             </td>
         </tr>`;
@@ -529,14 +612,18 @@ function render() {
 function recalcular() {
     let total = 0;
     document.querySelectorAll('#tbItens tr').forEach(tr => {
-        const item    = ITENS.find(i => i.id === tr.dataset.item);
+        const item = ITENS.find(i => i.id === tr.dataset.item);
+        if (!item) return;
         const semItem = tr.querySelector('.in-semitem')?.checked;
-        const preco   = semItem ? 0 : (Number(tr.querySelector('.in-preco').value) || 0);
-        const tot     = preco * Number(item.quantidade);
-        tr.querySelector('.tot-item').textContent = semItem ? '—' : App.money(tot);
+        const precoInp = tr.querySelector('.in-preco');
+        const preco = semItem ? 0 : App.parseNumber(precoInp ? precoInp.value : 0);
+        const tot = preco * Number(item.quantidade || 0);
+        const totCell = tr.querySelector('.tot-item');
+        if (totCell) totCell.textContent = semItem ? '—' : App.money(tot);
         total += tot;
     });
-    document.getElementById('totalGeral').textContent = App.money(total);
+    const totGeral = document.getElementById('totalGeral');
+    if (totGeral) totGeral.textContent = App.money(total);
 }
 
 function toggleSemItem(chk) {
@@ -632,10 +719,11 @@ async function salvar(enviar) {
     const obs    = document.getElementById('obsGeral').value.trim() || null;
     const linhas = [...document.querySelectorAll('#tbItens tr')].map(tr => {
         const semItem = tr.querySelector('.in-semitem')?.checked || false;
+        const precoInp = tr.querySelector('.in-preco');
         return {
             rfq_fornecedor_id: FORNECEDOR.id,
             rfq_item_id:       tr.dataset.item,
-            preco_unitario:    semItem ? 0 : (Number(tr.querySelector('.in-preco').value) || 0),
+            preco_unitario:    semItem ? 0 : App.parseNumber(precoInp ? precoInp.value : 0),
             prazo_entrega_dias: semItem ? null : (tr.querySelector('.in-prazo').value !== '' ? Number(tr.querySelector('.in-prazo').value) : null),
             marca:             semItem ? null : (tr.querySelector('.in-marca').value.trim() || null),
             sem_item:          semItem,
