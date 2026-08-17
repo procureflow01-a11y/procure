@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal do Fornecedor | Jacto Portáteis</title>
+<meta name="description" content="Portal de cotação eletrônica para fornecedores. Acesse com a chave recebida por e-mail.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+/* ============================================================
+   Design – idêntico ao eprocurement.css (layout claro/branco)
+   ============================================================ */
+:root {
+    --primary-color: #0284c7;
+    --primary-hover: #0369a1;
+    --bg-body: #f8fafc;
+    --panel-bg: #ffffff;
+    --panel-subtle: #f1f5f9;
+    --border-color: #e2e8f0;
+    --border-input: #cbd5e1;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --text-subtle: #475569;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 20px -2px rgba(0,0,0,0.05), 0 2px 6px -1px rgba(0,0,0,0.02);
+    --shadow-lg: 0 20px 25px -5px rgba(0,0,0,0.08), 0 10px 10px -5px rgba(0,0,0,0.03);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-body);
+    min-height: 100vh;
+    margin: 0;
+    color: var(--text-main);
+    padding-bottom: 60px;
+}
+
+a { color: var(--primary-color); text-decoration: none; }
+a:hover { color: var(--primary-hover); text-decoration: underline; }
+
+/* ── Topbar ── */
+.topbar {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    box-shadow: var(--shadow-sm);
+}
+
+.topbar .brand {
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: -0.4px;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topbar .brand i { color: var(--primary-color); }
+
+/* ── Cards ── */
+.card-glass {
+    background: var(--panel-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 22px;
+}
+
+.card-glass h5, .card-glass h4 {
+    color: var(--text-main);
+    font-weight: 700;
+    letter-spacing: -0.4px;
+}
+
+.section-sub {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+}
+
+/* ── Forms ── */
+.form-label {
+    font-size: 0.84rem;
+    color: var(--text-subtle);
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.form-control, .form-select {
+    background-color: #ffffff;
+    border: 1px solid var(--border-input);
+    color: var(--text-main);
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #ffffff;
+    color: var(--text-main);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(2,132,199,0.15);
+    outline: none;
+}
+
+.form-control::placeholder { color: #94a3b8; }
+.form-control:disabled { background-color: var(--panel-subtle); opacity: 0.7; cursor: not-allowed; }
+.form-control-sm { padding: 6px 10px; font-size: 0.85rem; border-radius: 8px; }
+textarea.form-control { resize: vertical; }
+
+/* ── Buttons ── */
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 8px 18px;
+    box-shadow: 0 2px 6px rgba(2,132,199,0.2);
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--primary-hover);
+    box-shadow: 0 4px 12px rgba(2,132,199,0.3);
+    color: #ffffff;
+}
+
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn-outline-light {
+    background-color: #ffffff;
+    border-radius: 10px;
+    border: 1px solid var(--border-input);
+    color: var(--text-subtle);
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-light:hover {
+    background-color: var(--panel-subtle);
+    border-color: #94a3b8;
+    color: var(--text-main);
+}
+
+.btn-outline-danger { border-radius: 10px; }
+
+/* ── Tables ── */
+.table {
+    color: var(--text-main);
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-main);
+    --bs-table-striped-bg: #f8fafc;
+    --bs-table-hover-bg: #f1f5f9;
+}
+
+.table thead th {
+    background-color: var(--panel-subtle);
+    color: var(--text-muted);
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 12px;
+}
+
+.table td, .table th {
+    border-color: var(--border-color);
+    vertical-align: middle;
+    padding: 12px;
+}
+
+/* ── Status Badges ── */
+.badge-status {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.st-respondido { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.st-enviado    { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; }
+.st-encerrada  { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+
+/* ── Dropzone ── */
+.drop-zone {
+    border: 2px dashed var(--border-input);
+    border-radius: 14px;
+    padding: 26px;
+    text-align: center;
+    color: var(--text-muted);
+    background: #fafafa;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--primary-color);
+    background: #f0f9ff;
+    color: var(--text-main);
+}
+
+/* ── Toasts ── */
+.toast-box {
+    position: fixed; top: 18px; right: 18px; z-index: 1080;
+    display: flex; flex-direction: column; gap: 10px; max-width: 380px;
+}
+
+.toast-item {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-left: 4px solid var(--primary-color);
+    color: var(--text-main);
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    box-shadow: var(--shadow-lg);
+    animation: slideIn .2s ease;
+}
+
+@keyframes slideIn { from { opacity:0; transform:translateX(12px); } to { opacity:1; transform:translateX(0); } }
+
+.footer-text { 
+    text-align: center !important; 
+    color: var(--text-muted); 
+    font-size: 0.78rem; 
+    margin: 32px auto 0 auto; 
+    width: 100%;
+    display: block;
+}
+
+/* ── Remover setas de aumentar/diminuir do campo de número ── */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button,
+.no-spin::-webkit-inner-spin-button,
+.no-spin::-webkit-outer-spin-button { 
+    -webkit-appearance: none; 
+    margin: 0; 
+}
+input[type=number], .no-spin {
+    -moz-appearance: textfield;
+}
+
+/* ── Spinner ── */
+.spinner {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+    border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ TOPBAR ═══════════════════ -->
+<div class="topbar shadow-sm">
+    <span class="brand fw-bold" style="font-size:1.15rem;"><i class="fa-solid fa-cart-shopping me-2" style="color:var(--primary-color);"></i> Portal do Fornecedor - Jacto Portáteis</span>
+    <span class="ms-auto section-sub fw-semibold text-primary" id="lblFornecedor"></span>
+</div>
+
+<!-- ═══════════════════ CONTENT ═══════════════════ -->
+<div class="container-fluid my-4 px-lg-5" style="max-width:1440px">
+
+    <!-- ── Tela de Acesso ── -->
+    <div class="card-glass shadow-lg border-0" id="boxChave" style="max-width: 650px; margin: 40px auto; border-radius: 16px;">
+        <div class="text-center mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center bg-primary-subtle text-primary rounded-circle mb-3" style="width:64px; height:64px;">
+                <i class="fa-solid fa-key fa-2x"></i>
+            </div>
+            <h4 class="fw-bold text-dark">Acessar Cotação de Fornecedor</h4>
+            <p class="section-sub">Informe a chave de acesso enviada pela equipe de compras no seu e-mail.</p>
+        </div>
+        <form onsubmit="buscarCotacao(event)">
+            <div class="input-group input-group-lg shadow-sm">
+                <input id="inpChave" class="form-control text-uppercase fw-bold text-center border-2" placeholder="Ex.: A1B2C3D4E5"
+                       style="letter-spacing:4px; font-family: monospace;" autocomplete="off" required>
+                <button id="btnBuscar" class="btn btn-primary fw-bold px-4 text-nowrap" type="submit">
+                    <i class="fa-solid fa-unlock me-2"></i>Abrir Cotação
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ── Tela de Cotação ── -->
+    <div id="boxCotacao" class="d-none">
+
+        <div class="card-glass border-0 shadow-sm mb-4" style="border-radius: 14px; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);">
+            <div class="d-flex flex-wrap align-items-center gap-3 p-1">
+                <div>
+                    <h4 class="mb-1 fw-bold text-dark" id="rfqNumero"></h4>
+                    <div class="section-sub fs-6" id="rfqInfo"></div>
+                </div>
+                <div class="ms-auto text-end">
+                    <span class="badge-status shadow-sm px-3 py-2 fs-6" id="rfqStatus"></span>
+                    <div class="section-sub mt-2" id="rfqObs"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-glass border-0 shadow-sm mb-4" style="border-radius: 14px;">
+            <h5 class="mb-3 fw-bold text-dark"><i class="fa-solid fa-table-list me-2 text-primary"></i>Itens da Cotação</h5>
+            <div class="table-responsive" style="border-radius: 10px; border: 1px solid var(--border-color);">
+                <table class="table align-middle table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:24%">Descrição do Material</th>
+                            <th style="width:20%">Especificação / Modelo</th>
+                            <th class="text-end" style="width:85px">Qtde</th>
+                            <th style="width:65px">Un.</th>
+                            <th style="width:200px" class="text-center">Preço Unitário (R$) *</th>
+                            <th style="width:160px" class="text-center">Prazo (Dias)</th>
+                            <th style="width:150px">Marca Sugerida</th>
+                            <th class="text-end" style="width:140px">Total do Item</th>
+                            <th class="text-center" style="width:100px" title="Marque se você não possui este item em estoque">Não possuo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbItens"></tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <th colspan="7" class="text-end fs-6 fw-bold">Total Geral da Proposta:</th>
+                            <th class="text-end text-success fs-5 fw-bold" id="totalGeral">R$ 0,00</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="mt-4">
+                <label class="form-label fw-bold small text-dark mb-1"><i class="fas fa-comment-dots me-1 text-primary"></i> Observações Gerais da Proposta (Opcional):</label>
+                <textarea id="obsGeral" class="form-control" rows="2"
+                    placeholder="Informe validade da proposta, detalhes de frete, impostos ou prazos adicionais..."></textarea>
+            </div>
+        </div>
+
+        <div class="card-glass border-0 shadow-sm mb-4" style="border-radius: 14px;">
+            <h5 class="mb-3 fw-bold text-dark"><i class="fa-solid fa-paperclip me-2 text-primary"></i>Anexos da Proposta</h5>
+            <div class="drop-zone shadow-sm" id="dropZone" onclick="document.getElementById('inpArquivo').click()">
+                <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2 text-primary"></i>
+                <div class="fw-semibold text-dark">Clique ou arraste arquivos de proposta comercial aqui</div>
+                <small class="text-muted">(PDF, Excel, Imagens ou ZIP — <strong>até 2 MB por arquivo</strong>)</small>
+            </div>
+            <input type="file" id="inpArquivo" class="d-none" multiple
+                   accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.png,.jpg,.jpeg,.zip">
+            <ul class="list-unstyled mt-3 mb-0" id="listaAnexos"></ul>
+        </div>
+
+        <div class="d-flex gap-3 mb-4 flex-wrap">
+            <button class="btn btn-outline-light px-4 py-2 fw-semibold" onclick="salvar(false)">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Salvar Rascunho
+            </button>
+            <button class="btn btn-primary px-5 py-2 fw-bold shadow-sm" id="btnEnviar" onclick="salvar(true)">
+                <i class="fa-solid fa-paper-plane me-2"></i>Enviar Proposta Final
+            </button>
+            <button class="btn btn-outline-danger ms-auto px-4 py-2 fw-semibold" onclick="sair()">
+                <i class="fa-solid fa-right-from-bracket me-1"></i>Sair
+            </button>
+        </div>
+
+    </div>
+
+    <div class="footer-text">&copy; 2026 Supply Chain — Módulo e-Procurement</div>
+</div>
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================================
+   CONFIGURAÇÃO SUPABASE
+   ============================================================ */
+const SUPABASE_URL    = 'https://pxtzkpklfmulmcksypvc.supabase.co';
+const SUPABASE_ANON   = 'sb_publishable_v985phPTMNuVecO_tKQtPQ_T1laKNp5';
+const SUPABASE_BUCKET = 'cotacoes';
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+/* ============================================================
+   ESTADO
+   ============================================================ */
+let FORNECEDOR = null, RFQ = null, ITENS = [], RESPOSTAS = {}, ANEXOS = [];
+
+/* ============================================================
+   UTILITÁRIOS
+   ============================================================ */
+const App = {
+    money: v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+    num:   v => (Number(v) || 0).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 3 }),
+    date:  v => { if (!v) return '-'; const d = new Date(v); return isNaN(d) ? v : d.toLocaleDateString('pt-BR'); },
+    escape: v => String(v == null ? '' : v)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;'),
+
+    parseNumber(v) {
+        if (typeof v === 'number') return isNaN(v) ? 0 : v;
+        if (!v) return 0;
+        const clean = String(v).replace(/[^0-9,-]/g, '').replace(',', '.');
+        return parseFloat(clean) || 0;
+    },
+
+    formatDecimal(v) {
+        if (v === null || v === undefined || v === '') return '';
+        const num = Number(v);
+        if (isNaN(num)) return v;
+        return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+    },
+
+    toast(mensagem, tipo) {
+        const cores = { success: '#15803d', error: '#dc2626', warning: '#d97706', info: '#0284c7' };
+        let box = document.getElementById('toastBox');
+        if (!box) {
+            box = document.createElement('div');
+            box.id = 'toastBox';
+            box.className = 'toast-box';
+            document.body.appendChild(box);
+        }
+        const el = document.createElement('div');
+        el.className = 'toast-item';
+        el.style.borderLeftColor = cores[tipo] || cores.info;
+        el.textContent = mensagem;
+        box.appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; setTimeout(() => el.remove(), 300); }, 5000);
+    },
+
+    async run(promise, erroMsg) {
+        const { data, error } = await promise;
+        if (error) {
+            console.error(error);
+            App.toast((erroMsg || 'Erro') + ': ' + error.message, 'error');
+            throw error;
+        }
+        return data;
+    },
+
+    btnLoading(id, loading) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        if (loading) {
+            btn._orig = btn.innerHTML;
+            btn.innerHTML = '<span class="spinner"></span> Aguarde...';
+            btn.disabled = true;
+        } else {
+            btn.innerHTML = btn._orig || btn.innerHTML;
+            btn.disabled = false;
+        }
+    }
+};
+
+function formatarMoedaInput(input) {
+    let val = input.value;
+    val = val.replace(/[^0-9,.]/g, '');
+    input.value = val;
+}
+
+function formatarMoedaBlur(input) {
+    if (!input.value.trim()) return;
+    const num = App.parseNumber(input.value);
+    if (num > 0) {
+        input.value = App.formatDecimal(num);
+    }
+}
+
+/* ============================================================
+   BOOT – lê chave da URL automaticamente
+   ============================================================ */
+(function init() {
+    const chave = new URLSearchParams(location.search).get('chave');
+    if (chave) {
+        document.getElementById('inpChave').value = chave.trim().toUpperCase();
+        buscarCotacao();
+    }
+})();
+
+/* ============================================================
+   BUSCAR COTAÇÃO
+   ============================================================ */
+async function buscarCotacao(ev) {
+    if (ev) ev.preventDefault();
+    const chave = (document.getElementById('inpChave').value || '').trim().toUpperCase();
+    if (!chave) return;
+
+    App.btnLoading('btnBuscar', true);
+    try {
+        const { data, error } = await db
+            .from('rfq_fornecedores')
+            .select('*, rfqs(*, rfq_itens(*))')
+            .eq('chave', chave)
+            .maybeSingle();
+
+        if (error) return App.toast('Erro ao buscar cotação: ' + error.message, 'error');
+        if (!data)  return App.toast('Chave inválida. Verifique o e-mail recebido.', 'error');
+
+        FORNECEDOR = data;
+        RFQ   = data.rfqs;
+        ITENS = (RFQ.rfq_itens || []).slice().sort((a, b) => a.descricao.localeCompare(b.descricao, 'pt-BR'));
+
+        const respostas = await App.run(
+            db.from('cotacao_respostas').select('*').eq('rfq_fornecedor_id', FORNECEDOR.id),
+            'Erro ao carregar respostas anteriores');
+        RESPOSTAS = {};
+        (respostas || []).forEach(r => { RESPOSTAS[r.rfq_item_id] = r; });
+
+        ANEXOS = await App.run(
+            db.from('cotacao_anexos').select('*').eq('rfq_fornecedor_id', FORNECEDOR.id),
+            'Erro ao carregar anexos') || [];
+
+        render();
+    } catch (e) {
+        console.error(e);
+    } finally {
+        App.btnLoading('btnBuscar', false);
+    }
+}
+
+/* ============================================================
+   RENDERIZAR
+   ============================================================ */
+function render() {
+    document.getElementById('boxChave').classList.add('d-none');
+    document.getElementById('boxCotacao').classList.remove('d-none');
+    document.getElementById('lblFornecedor').textContent = FORNECEDOR.fornecedor + ' | ' + FORNECEDOR.email;
+
+    const compradorRaw = String(RFQ.comprador || '').trim();
+    const compradorNome = compradorRaw.includes('@') ? compradorRaw.split('@')[0] : compradorRaw;
+
+    document.getElementById('rfqNumero').textContent = 'Cotação ' + RFQ.numero;
+    document.getElementById('rfqInfo').innerHTML =
+        `Comprador: <b>${App.escape(compradorNome)}</b> &nbsp;•&nbsp;
+         Prazo de resposta: <b>${App.date(RFQ.prazo_resposta)}</b> &nbsp;•&nbsp;
+         Pagamento: <b>${App.escape(RFQ.condicao_pagto || 'a combinar')}</b>`;
+    document.getElementById('rfqObs').textContent = RFQ.observacoes || '';
+
+    const st = document.getElementById('rfqStatus');
+    st.textContent = FORNECEDOR.status;
+    st.className = 'badge-status ' + (FORNECEDOR.status === 'Respondido' ? 'st-respondido' : 'st-enviado');
+
+    const encerrada = RFQ.status !== 'Aberta';
+    document.getElementById('btnEnviar').disabled = encerrada;
+    if (encerrada) App.toast('Esta RFQ está ' + RFQ.status.toLowerCase() + ' — não é possível enviar proposta.', 'warning');
+
+    document.getElementById('tbItens').innerHTML = ITENS.map(i => {
+        const r      = RESPOSTAS[i.id] || {};
+        const semItem = r.sem_item === true;
+        const dis    = semItem ? 'disabled' : '';
+        const precoFormatado = (!semItem && r.preco_unitario) ? App.formatDecimal(r.preco_unitario) : '';
+
+        return `<tr data-item="${i.id}">
+            <td class="fw-bold text-dark">${App.escape(i.descricao)}</td>
+            <td class="section-sub">${App.escape(i.especificacao || '-')}</td>
+            <td class="text-end fw-semibold">${App.num(i.quantidade)}</td>
+            <td><span class="badge bg-light text-dark border">${App.escape(i.unidade)}</span></td>
+            <td>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-light text-muted fw-semibold" style="font-size:0.8rem;">R$</span>
+                    <input type="text" inputmode="decimal" class="form-control form-control-sm in-preco fw-bold text-end"
+                           style="font-size:0.88rem;"
+                           value="${precoFormatado}"
+                           oninput="formatarMoedaInput(this); recalcular();"
+                           onblur="formatarMoedaBlur(this)"
+                           ${dis} placeholder="0,0000">
+                </div>
+            </td>
+            <td>
+                <div class="input-group input-group-sm">
+                    <input type="text" inputmode="numeric" class="form-control form-control-sm in-prazo text-center fw-semibold no-spin"
+                           value="${(!semItem && r.prazo_entrega_dias != null) ? r.prazo_entrega_dias : ''}"
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                           ${dis} placeholder="0">
+                    <span class="input-group-text bg-light text-muted small" style="font-size:0.75rem;">dias</span>
+                </div>
+            </td>
+            <td>
+                <input class="form-control form-control-sm in-marca"
+                       placeholder="Sua marca..."
+                       value="${App.escape(!semItem ? (r.marca || '') : '')}" ${dis}>
+            </td>
+            <td class="text-end fw-bold text-primary tot-item">R$ 0,00</td>
+            <td class="text-center">
+                <div class="form-check form-switch d-flex flex-column align-items-center justify-content-center m-0">
+                    <input class="form-check-input in-semitem m-0" type="checkbox" role="switch"
+                           style="cursor:pointer; width: 2.2em; height: 1.2em;"
+                           title="Marque se não possui este item"
+                           ${semItem ? 'checked' : ''}
+                           onchange="toggleSemItem(this)">
+                    <span class="section-sub mt-1 ${semItem ? 'text-danger fw-bold' : ''}" style="font-size:0.68rem">
+                        ${semItem ? 'Não possuo' : 'Possuo'}
+                    </span>
+                </div>
+            </td>
+        </tr>`;
+    }).join('');
+
+    const obsGeral = Object.values(RESPOSTAS).map(r => r.observacao).find(Boolean);
+    document.getElementById('obsGeral').value = obsGeral || '';
+
+    renderAnexos();
+    recalcular();
+}
+
+function recalcular() {
+    let total = 0;
+    document.querySelectorAll('#tbItens tr').forEach(tr => {
+        const item = ITENS.find(i => i.id === tr.dataset.item);
+        if (!item) return;
+        const semItem = tr.querySelector('.in-semitem')?.checked;
+        const precoInp = tr.querySelector('.in-preco');
+        const preco = semItem ? 0 : App.parseNumber(precoInp ? precoInp.value : 0);
+        const tot = preco * Number(item.quantidade || 0);
+        const totCell = tr.querySelector('.tot-item');
+        if (totCell) totCell.textContent = semItem ? '—' : App.money(tot);
+        total += tot;
+    });
+    const totGeral = document.getElementById('totalGeral');
+    if (totGeral) totGeral.textContent = App.money(total);
+}
+
+function toggleSemItem(chk) {
+    const tr = chk.closest('tr');
+    const desabilitar = chk.checked;
+    ['in-preco', 'in-prazo', 'in-marca'].forEach(cls => {
+        const inp = tr.querySelector('.' + cls);
+        if (!inp) return;
+        inp.disabled = desabilitar;
+        if (desabilitar) inp.value = '';
+    });
+    recalcular();
+}
+
+/* ============================================================
+   ANEXOS
+   ============================================================ */
+const dropZone = document.getElementById('dropZone');
+['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, ev => {
+    ev.preventDefault(); dropZone.classList.add('dragover');
+}));
+['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, ev => {
+    ev.preventDefault(); dropZone.classList.remove('dragover');
+}));
+dropZone.addEventListener('drop', ev => enviarArquivos(ev.dataTransfer.files));
+document.getElementById('inpArquivo').addEventListener('change', ev => {
+    enviarArquivos(ev.target.files);
+    ev.target.value = '';
+});
+
+async function enviarArquivos(fileList) {
+    if (!FORNECEDOR) return;
+    for (const file of Array.from(fileList)) {
+        if (file.size > 2 * 1024 * 1024) {
+            App.toast(file.name + ': arquivo maior que 2 MB. Por favor, compacte ou reduza o arquivo.', 'warning');
+            continue;
+        }
+        const seguro = file.name.replace(/[^\w.\-]+/g, '_');
+        const path   = `${RFQ.numero}/${FORNECEDOR.id}/${Date.now()}_${seguro}`;
+
+        const { error } = await db.storage.from(SUPABASE_BUCKET)
+            .upload(path, file, { upsert: false, contentType: file.type || 'application/octet-stream' });
+        if (error) { App.toast('Falha no upload de ' + file.name + ': ' + error.message, 'error'); continue; }
+
+        const { data: pub } = db.storage.from(SUPABASE_BUCKET).getPublicUrl(path);
+
+        try {
+            const anexo = await App.run(db.from('cotacao_anexos').insert({
+                rfq_fornecedor_id: FORNECEDOR.id,
+                nome_arquivo: file.name,
+                path,
+                url: pub ? pub.publicUrl : null,
+                tamanho: file.size
+            }).select().single(), 'Erro ao registrar anexo');
+            ANEXOS.push(anexo);
+            App.toast(file.name + ' anexado com sucesso.', 'success');
+        } catch (e) { /* toast já exibido */ }
+    }
+    renderAnexos();
+}
+
+function renderAnexos() {
+    document.getElementById('listaAnexos').innerHTML = ANEXOS.length
+        ? ANEXOS.map(a => `
+            <li class="d-flex align-items-center gap-2 mb-2">
+                <i class="fa-regular fa-file" style="color:var(--primary-color)"></i>
+                <a href="${App.escape(a.url || '#')}" target="_blank">${App.escape(a.nome_arquivo)}</a>
+                <span class="section-sub">${((a.tamanho || 0) / 1024).toFixed(0)} KB</span>
+                <button class="btn btn-sm btn-outline-danger ms-auto" onclick="removerAnexo('${a.id}')">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </li>`).join('')
+        : '<li class="section-sub">Nenhum arquivo anexado.</li>';
+}
+
+async function removerAnexo(id) {
+    const anexo = ANEXOS.find(a => a.id === id);
+    if (!anexo) return;
+    if (!confirm('Remover o arquivo "' + anexo.nome_arquivo + '"?')) return;
+    await db.storage.from(SUPABASE_BUCKET).remove([anexo.path]);
+    await App.run(db.from('cotacao_anexos').delete().eq('id', id), 'Erro ao remover anexo');
+    ANEXOS = ANEXOS.filter(a => a.id !== id);
+    renderAnexos();
+    App.toast('Anexo removido.', 'info');
+}
+
+/* ============================================================
+   SALVAR / ENVIAR
+   ============================================================ */
+async function salvar(enviar) {
+    if (!FORNECEDOR) return;
+
+    const obs    = document.getElementById('obsGeral').value.trim() || null;
+    const linhas = [...document.querySelectorAll('#tbItens tr')].map(tr => {
+        const semItem = tr.querySelector('.in-semitem')?.checked || false;
+        const precoInp = tr.querySelector('.in-preco');
+        return {
+            rfq_fornecedor_id: FORNECEDOR.id,
+            rfq_item_id:       tr.dataset.item,
+            preco_unitario:    semItem ? 0 : App.parseNumber(precoInp ? precoInp.value : 0),
+            prazo_entrega_dias: semItem ? null : (tr.querySelector('.in-prazo').value !== '' ? Number(tr.querySelector('.in-prazo').value) : null),
+            marca:             semItem ? null : (tr.querySelector('.in-marca').value.trim() || null),
+            sem_item:          semItem,
+            observacao:        obs,
+            updated_at:        new Date().toISOString()
+        };
+    });
+
+    if (enviar && linhas.some(l => !l.sem_item && !l.preco_unitario)) {
+        return App.toast('Preencha o preço unitário dos itens que você possui, ou marque "Não possuo" para os demais.', 'warning');
+    }
+    if (enviar && linhas.every(l => l.sem_item)) {
+        return App.toast('Você marcou todos os itens como "Não possuo". Por favor, informe preço para ao menos um item ou entre em contato com o comprador.', 'warning');
+    }
+
+    if (enviar) App.btnLoading('btnEnviar', true);
+
+    try {
+        await App.run(
+            db.from('cotacao_respostas').upsert(linhas, { onConflict: 'rfq_fornecedor_id,rfq_item_id' }),
+            'Erro ao salvar preços');
+
+        if (enviar) {
+            await App.run(db.from('rfq_fornecedores').update({
+                status: 'Respondido', respondido_em: new Date().toISOString()
+            }).eq('id', FORNECEDOR.id), 'Erro ao concluir envio');
+            FORNECEDOR.status = 'Respondido';
+            const st = document.getElementById('rfqStatus');
+            st.textContent = 'Respondido';
+            st.className = 'badge-status st-respondido';
+            document.getElementById('btnEnviar').disabled = true;
+            App.toast('Proposta enviada com sucesso. Obrigado!', 'success');
+        } else {
+            App.toast('Rascunho salvo. Você pode continuar editando.', 'info');
+        }
+    } catch (e) { /* toast já exibido */ }
+    finally {
+        if (enviar) App.btnLoading('btnEnviar', false);
+    }
+}
+
+function sair() {
+    if (!confirm('Deseja sair? Certifique-se de ter salvo o rascunho ou enviado a proposta.')) return;
+    FORNECEDOR = null; RFQ = null; ITENS = []; RESPOSTAS = {}; ANEXOS = [];
+    document.getElementById('boxCotacao').classList.add('d-none');
+    document.getElementById('boxChave').classList.remove('d-none');
+    document.getElementById('inpChave').value = '';
+    history.replaceState({}, '', location.pathname);
+}
+</script>
+</body>
+</html>
