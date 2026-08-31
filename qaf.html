@@ -566,7 +566,7 @@
             btn.innerHTML = originalHtml;
 
             // Exibe modal de sucesso
-            document.getElementById('modalRefId').textContent = `ID do Registro: #${newId} | Status: ${status} (${score_pct}%)`;
+            document.getElementById('modalRefId').textContent = `ID do Registro: #${newId}`;
             const modal = new bootstrap.Modal(document.getElementById('modalSuccess'));
             modal.show();
         }
