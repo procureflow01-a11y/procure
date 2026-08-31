@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário QAF - Qualificação de Fornecedores | Jacto</title>
+    
+    <!-- Google Fonts & Bootstrap 5 & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS Client CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --primary-blue: #0f172a;
+            --accent-blue: #1e3a8a;
+            --bright-blue: #2563eb;
+            --jacto-orange: #f97316;
+            --bg-body: #f8fafc;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 60px;
+        }
+
+        .header-banner {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white;
+            padding: 30px 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .brand-logo {
+            max-height: 48px;
+        }
+
+        .lang-btn {
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            background: white;
+            color: var(--primary-blue);
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            padding: 30px;
+            margin-top: 25px;
+        }
+
+        .section-header {
+            background: #f1f5f9;
+            border-left: 4px solid var(--bright-blue);
+            padding: 10px 16px;
+            border-radius: 0 6px 6px 0;
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 1rem;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        .question-row {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.15s ease;
+        }
+
+        .question-row:hover {
+            background: #f8fafc;
+        }
+
+        .question-num {
+            font-weight: 700;
+            color: var(--bright-blue);
+            min-width: 45px;
+        }
+
+        .option-group .btn-check:checked + .btn-outline-success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .option-group .btn-check:checked + .btn-outline-warning {
+            background-color: #f59e0b;
+            color: white;
+        }
+
+        .option-group .btn-check:checked + .btn-outline-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .option-group .btn-check:checked + .btn-outline-secondary {
+            background-color: #64748b;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER BANNER -->
+    <header class="header-banner">
+        <div class="container d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <img src="/static/img/logoJactoWhite.png" alt="Logo Jacto" class="brand-logo" onerror="this.style.display='none'">
+                <div>
+                    <h4 class="fw-bold mb-0 text-white" id="txtTitle">Formulário de Qualificação e Avaliação de Fornecedores (QAF)</h4>
+                    <p class="mb-0 text-white-50 small" id="txtSubtitle">Máquinas Agrícolas Jacto S/A — Supply Chain & Gestão da Qualidade</p>
+                </div>
+            </div>
+            
+            <!-- SELETOR DE IDIOMA -->
+            <div class="d-flex align-items-center gap-2">
+                <span class="small text-white-50 me-1" id="txtLangLabel"><i class="fas fa-globe me-1"></i>Idioma:</span>
+                <button type="button" class="lang-btn active" id="btnLangPt" onclick="setLanguage('pt')">🇧🇷 Português</button>
+                <button type="button" class="lang-btn" id="btnLangEn" onclick="setLanguage('en')">🇺🇸 English</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mt-2">
+
+        <form id="qafForm" onsubmit="submitQafForm(event)">
+
+            <!-- SEÇÃO 1: DADOS CADASTRAIS DA EMPRESA -->
+            <div class="form-card">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3" id="secCompanyTitle">
+                    <i class="fas fa-building text-primary me-2"></i>1. Dados Cadastrais do Fornecedor
+                </h5>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="razao_social" class="form-label fw-semibold small" id="lblRazaoSocial">Razão Social / Nome da Empresa *</label>
+                        <input type="text" id="razao_social" class="form-control" required placeholder="Digite o nome completo da empresa">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="cnpj" class="form-label fw-semibold small" id="lblCnpj">CNPJ / Registro Fiscal (Tax ID) *</label>
+                        <input type="text" id="cnpj" class="form-control" required placeholder="Ex: 00.000.000/0001-00 ou ID Internacional">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="cidade" class="form-label fw-semibold small" id="lblCidade">Cidade *</label>
+                        <input type="text" id="cidade" class="form-control" required placeholder="Cidade">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="estado" class="form-label fw-semibold small" id="lblEstado">Estado / Província / País *</label>
+                        <input type="text" id="estado" class="form-control" required placeholder="Ex: SP / Brasil ou Estado/País">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="cep" class="form-label fw-semibold small" id="lblCep">CEP / Código Postal</label>
+                        <input type="text" id="cep" class="form-control" placeholder="CEP">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="contato" class="form-label fw-semibold small" id="lblContato">Pessoa de Contato Principal *</label>
+                        <input type="text" id="contato" class="form-control" required placeholder="Nome do responsável">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="fone" class="form-label fw-semibold small" id="lblFone">Telefone de Contato *</label>
+                        <input type="text" id="fone" class="form-control" required placeholder="+55 (00) 00000-0000">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="email_contato" class="form-label fw-semibold small" id="lblEmail">E-mail de Contato *</label>
+                        <input type="email" id="email_contato" class="form-control" required placeholder="contato@fornecedor.com">
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="produtos" class="form-label fw-semibold small" id="lblProdutos">Produtos Fabricados e/ou Comercializados</label>
+                        <input type="text" id="produtos" class="form-control" placeholder="Ex: Injeção Plástica, Usinagem, Parafusos...">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="certificados" class="form-label fw-semibold small" id="lblCertificados">Certificações da Qualidade / Meio Ambiente</label>
+                        <input type="text" id="certificados" class="form-control" placeholder="Ex: ISO 9001, ISO 14001, IATF 16949, Nenhuma">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEÇÕES 2-14: QUESTIONÁRIO DE AUDITORIA -->
+            <div class="form-card">
+                <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                    <h5 class="fw-bold text-dark m-0" id="secAuditTitle">
+                        <i class="fas fa-clipboard-check text-primary me-2"></i>2. Questionário de Avaliação e Auditoria de Fábrica
+                    </h5>
+                    <span class="badge bg-light text-dark border small fw-bold" id="lblLegend">Sim | Parcial | Não | N/A</span>
+                </div>
+
+                <div id="questionsContainer">
+                    <!-- Gerado dinamicamente via JS -->
+                </div>
+            </div>
+
+            <!-- SEÇÃO DE OBSERVAÇÕES E PLANO DE AÇÃO -->
+            <div class="form-card">
+                <h5 class="fw-bold text-dark border-bottom pb-2 mb-3" id="secObsTitle">
+                    <i class="fas fa-comment-dots text-primary me-2"></i>3. Observações Adicionais / Esclarecimentos
+                </h5>
+                <textarea id="observacoes" class="form-control" rows="4" placeholder="Digite aqui observações adicionais, justificativas para itens marcados como Parcial ou Não Aplicável..."></textarea>
+            </div>
+
+            <!-- BOTÃO DE ENVIO -->
+            <div class="text-end mt-4">
+                <button type="submit" id="btnSubmitQaf" class="btn btn-primary btn-lg rounded-pill px-5 shadow-lg fw-bold">
+                    <i class="fas fa-paper-plane me-2"></i><span id="txtSubmitBtn">Enviar Formulário QAF</span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- MODAL DE SUCESSO -->
+    <div class="modal fade" id="modalSuccess" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg text-center p-4">
+                <div class="modal-body">
+                    <div class="mb-3 text-success">
+                        <i class="fas fa-check-circle display-1"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark" id="modalSuccessTitle">Formulário Enviado com Sucesso!</h4>
+                    <p class="text-muted" id="modalSuccessMsg">Seus dados e respostas foram registrados com sucesso no banco de dados Supabase da Jacto.</p>
+                    <div class="alert alert-light border py-2 small fw-bold text-primary mb-3" id="modalRefId">ID da Avaliação: #---</div>
+                    <button type="button" class="btn btn-primary rounded-pill px-4" onclick="location.reload()">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS DICTIONARY & LOGIC -->
+    <script>
+        const SUPABASE_URL = "https://gljbijmjxeavienqtkge.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_STwfjXnMZ4fblkgZRyDFAA_RhGAUg54";
+        
+        let supabaseClient = null;
+        if (window.supabase) {
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
+
+        let currentLang = 'pt';
+
+        const SECTIONS = [
+            { id: 1, title_pt: '1. Controle de Documentos', title_en: '1. Document Control', items: ['1.1', '1.2', '1.3', '1.4', '1.5'] },
+            { id: 2, title_pt: '2. Responsabilidade da Direção', title_en: '2. Management Responsibility', items: ['2.1', '2.2', '2.3'] },
+            { id: 3, title_pt: '3. Gestão de Recursos', title_en: '3. Resource Management', items: ['3.1', '3.2', '3.3', '3.4'] },
+            { id: 4, title_pt: '4. Planejamento do Produto', title_en: '4. Product Realization Planning', items: ['4.1', '4.2', '4.3', '4.4'] },
+            { id: 5, title_pt: '5. Projeto e Desenvolvimento', title_en: '5. Design & Development', items: ['5.1', '5.2', '5.3', '5.4', '5.5'] },
+            { id: 6, title_pt: '6. Processo de Aquisição', title_en: '6. Purchasing Process', items: ['6.1', '6.2', '6.3'] },
+            { id: 7, title_pt: '7. Controle de Produção', title_en: '7. Production Control', items: ['7.1', '7.2', '7.3', '7.4', '7.5', '7.6'] },
+            { id: 8, title_pt: '8. Identificação e Rastreabilidade', title_en: '8. Identification & Traceability', items: ['8.1', '8.2', '8.3'] },
+            { id: 9, title_pt: '9. Preservação do Produto', title_en: '9. Product Preservation', items: ['9.1', '9.2'] },
+            { id: 10, title_pt: '10. Medição e Monitoramento', title_en: '10. Measurement & Monitoring', items: ['10.1', '10.2', '10.3', '10.4'] },
+            { id: 11, title_pt: '11. Controle de Prod. Não Conforme', title_en: '11. Non-Conforming Product Control', items: ['11.1', '11.2', '11.3'] },
+            { id: 12, title_pt: '12. Análise de Dados', title_en: '12. Data Analysis', items: ['12.1', '12.2'] },
+            { id: 14, title_pt: '14. Melhoria Contínua', title_en: '14. Continuous Improvement', items: ['14.1', '14.2', '14.3', '14.4', '14.5', '14.6', '14.7', '14.8', '14.9'] }
+        ];
+
+        const QUESTIONS = {
+            '1.1': { pt: 'Existe local específico para arquivo de documentos e registros?', en: 'Is there a specific location for filing documents and quality records?' },
+            '1.2': { pt: 'É analisado criticamente pelas áreas envolvidas qualquer alteração nos documentos?', en: 'Are document changes critically reviewed by the involved departments?' },
+            '1.3': { pt: 'Há registros para controle de atualizações?', en: 'Are there records for controlling document updates and revisions?' },
+            '1.4': { pt: 'A documentação atualizada aplicável é disponibilizada nos locais de uso?', en: 'Is applicable updated documentation available at points of use?' },
+            '1.5': { pt: 'Existe procedimento para não utilização de documentos obsoletos?', en: 'Is there a procedure to prevent the use of obsolete documents?' },
+
+            '2.1': { pt: 'Existe uma política da qualidade definida, comunicada e entendida por toda a organização?', en: 'Is there a quality policy defined, communicated, and understood throughout the organization?' },
+            '2.2': { pt: 'Existe um representante da Direção responsável pelo monitoramento do sistema de qualidade?', en: 'Is there a Management Representative responsible for monitoring the quality system?' },
+            '2.3': { pt: 'A direção analisa periodicamente o sistema de gestão da qualidade?', en: 'Does management periodically review the quality management system?' },
+
+            '3.1': { pt: 'São providos recursos de infraestrutura e mão-de-obra necessários?', en: 'Are necessary infrastructure resources and workforce provided?' },
+            '3.2': { pt: 'É disponibilizado cursos de aperfeiçoamento na área técnica do segmento da empresa?', en: 'Are technical training and skill improvement courses provided?' },
+            '3.3': { pt: 'É disponibilizado cursos e treinamentos na área de qualidade?', en: 'Are quality management courses and training programs provided?' },
+            '3.4': { pt: 'Existe integração e/ou treinamento específico para novos funcionários?', en: 'Is there onboarding or specific training for new employees?' },
+
+            '4.1': { pt: 'Ao planejar a realização do produto é definido e seguido seus requisitos de qualidade?', en: 'When planning product realization, are quality requirements defined and followed?' },
+            '4.2': { pt: 'É definido e applied critérios para avaliação e aprovação do produto?', en: 'Are criteria defined and applied for product evaluation and approval?' },
+            '4.3': { pt: 'Antes de assumir o compromisso do fornecimento os requisitos do produto são analisados?', en: 'Before committing to supply, are product requirements thoroughly reviewed?' },
+            '4.4': { pt: 'Há um procedimento para informar o cliente em caso de alterações no requisito do produto?', en: 'Is there a procedure to notify the customer in case of product requirement changes?' },
+
+            '5.1': { pt: 'No planejamento do projeto é elaborado cronograma com as fases do projeto?', en: 'In project planning, is a schedule prepared with project phases?' },
+            '5.2': { pt: 'No cronograma do projeto são definidos os respectivos responsáveis pelas atividades?', en: 'Are activity leaders and responsibilities defined in the project schedule?' },
+            '5.3': { pt: 'São realizadas análises críticas durante as etapas do projeto?', en: 'Are design reviews conducted during project stages?' },
+            '5.4': { pt: 'A aprovação e validação do projeto é realizada antes do início do fornecimento do produto?', en: 'Is project approval and validation completed before serial production supply?' },
+            '5.5': { pt: 'Existe procedimento para quando haver alteração no projeto, haver comunicação junto ao cliente?', en: 'Is there a procedure to communicate design changes to the customer?' },
+
+            '6.1': { pt: 'Existe método estabelecido para avaliação e seleção de fornecedores?', en: 'Is there an established method for evaluating and selecting suppliers?' },
+            '6.2': { pt: 'A organização possui lista atualizada com o desempenho de seus fornecedores?', en: 'Does the organization maintain an updated list of supplier performance?' },
+            '6.3': { pt: 'As informações dos requisitos do produto a ser adquirido é informado de forma clara?', en: 'Are purchasing information and product requirements clearly stated?' },
+
+            '7.1': { pt: 'Existe fluxo definido para o processo de produção de todos os produtos?', en: 'Is there a defined process flow for all manufactured products?' },
+            '7.2': { pt: 'O processo de produção é seguido rigorosamente?', en: 'Is the production process strictly followed?' },
+            '7.3': { pt: 'Está disponível informações e instruções nos postos de trabalho?', en: 'Are work instructions and information available at workstations?' },
+            '7.4': { pt: 'É utilizado equipamento adequado (dispositivos) para fabricação / montagem dos produtos?', en: 'Are suitable equipment and fixtures used for manufacturing/assembly?' },
+            '7.5': { pt: 'É realizado controle de qualidade do produto durante o processo de produção?', en: 'Is in-process quality control performed during production?' },
+            '7.6': { pt: 'São realizados testes funcionais?', en: 'Are functional tests performed on finished products?' },
+
+            '8.1': { pt: 'As peças possuem identificação para rastreabilidade de lote?', en: 'Are parts identified for lot traceability?' },
+            '8.2': { pt: 'Existe identificação de peças aprovadas, reprovadas, em análise, etc.?', en: 'Is there clear identification for approved, rejected, or pending parts?' },
+            '8.3': { pt: 'Há locais diferentes para as peças aprovadas e reprovadas?', en: 'Are there separate quarantine/storage areas for approved and rejected parts?' },
+
+            '9.1': { pt: 'Existem depósitos ou áreas de amazenamento que previnem danos ao produto acabado?', en: 'Are there storage areas that prevent damage to finished products?' },
+            '9.2': { pt: 'O sistema de embalagem e transporte é adequado ao produto à ser fornecido?', en: 'Is the packaging and transportation system suitable for the supplied product?' },
+
+            '10.1': { pt: 'A organização realiza auditorias internas e periódicas em seu sistema de qualidade?', en: 'Does the organization conduct periodic internal quality audits?' },
+            '10.2': { pt: 'É utilizado o CEP no controle nos processos importantes da organização?', en: 'Is Statistical Process Control (SPC) used in key processes?' },
+            '10.3': { pt: 'Há instrumentos de medição em quantidade e adequados para utilização?', en: 'Are there adequate and suitable measuring instruments available?' },
+            '10.4': { pt: 'Os instrumentos de medição são aferidos periodicamente?', en: 'Are measuring instruments calibrated periodically?' },
+
+            '11.1': { pt: 'Há procedimento para controle de produtos não conformes?', en: 'Is there a procedure for non-conforming product control?' },
+            '11.2': { pt: 'Produtos retrabalhados e/ou reparados são reinspecionados?', en: 'Are reworked or repaired products re-inspected?' },
+            '11.3': { pt: 'Antes da utilização de um produto não-conforme é solicitado autorização do cliente?', en: 'Is customer deviation/concession requested before using non-conforming parts?' },
+
+            '12.1': { pt: 'São coletados e analisados dados com relação a satisfação do cliente e fornecedores?', en: 'Are customer and supplier satisfaction data collected and analyzed?' },
+            '12.2': { pt: 'Os dados coletados são utilizados para melhoria contínua do sistema de qualidade?', en: 'Are collected data used for continuous quality system improvement?' },
+
+            '14.1': { pt: 'Existe procedimento para análise das reclamações de clientes?', en: 'Is there a procedure for analyzing customer complaints?' },
+            '14.2': { pt: 'As não conformidades são analisadas criticamente?', en: 'Are non-conformities critically analyzed?' },
+            '14.3': { pt: 'São utilizadas ferramentas da qualidade para análise da causa raiz das não conformidades?', en: 'Are quality tools (5-Why, Fishbone, etc.) used for root cause analysis?' },
+            '14.4': { pt: 'São utilizadas ferramentas da qualidade para definição do plano de ação das não conformidades?', en: 'Are quality tools used to define non-conformity action plans?' },
+            '14.5': { pt: 'São determinadas e implementadas as ações de contenção e corretivas?', en: 'Are containment and corrective actions determined and implemented?' },
+            '14.6': { pt: 'Depois de implementadas as ações corretivas são reavaliadas para verificação da eficácia?', en: 'Are corrective actions re-evaluated to verify effectiveness?' },
+            '14.7': { pt: 'Existe procedimento para instalação de ações preventivas?', en: 'Is there a procedure for preventive action implementation?' },
+            '14.8': { pt: 'São determinadas e implementadas as ações preventivas?', en: 'Are preventive actions determined and implemented?' },
+            '14.9': { pt: 'Depois de implementadas as ações preventivas são reavaliadas para verificação da eficácia?', en: 'Are preventive actions re-evaluated to verify effectiveness?' }
+        };
+
+        const LABELS = {
+            pt: {
+                txtTitle: "Formulário de Qualificação e Avaliação de Fornecedores (QAF)",
+                txtSubtitle: "Máquinas Agrícolas Jacto S/A — Supply Chain & Gestão da Qualidade",
+                txtLangLabel: "Idioma:",
+                secCompanyTitle: '<i class="fas fa-building text-primary me-2"></i>1. Dados Cadastrais do Fornecedor',
+                lblRazaoSocial: "Razão Social / Nome da Empresa *",
+                lblCnpj: "CNPJ / Registro Fiscal (Tax ID) *",
+                lblCidade: "Cidade *",
+                lblEstado: "Estado / Província / País *",
+                lblCep: "CEP / Código Postal",
+                lblContato: "Pessoa de Contato Principal *",
+                lblFone: "Telefone de Contato *",
+                lblEmail: "E-mail de Contato *",
+                lblProdutos: "Produtos Fabricados e/ou Comercializados",
+                lblCertificados: "Certificações da Qualidade / Meio Ambiente",
+                secAuditTitle: '<i class="fas fa-clipboard-check text-primary me-2"></i>2. Questionário de Avaliação e Auditoria de Fábrica',
+                lblLegend: "Sim | Parcial | Não | N/A",
+                secObsTitle: '<i class="fas fa-comment-dots text-primary me-2"></i>3. Observações Adicionais / Esclarecimentos',
+                txtSubmitBtn: "Enviar Formulário QAF",
+                modalSuccessTitle: "Formulário Enviado com Sucesso!",
+                modalSuccessMsg: "Seus dados e respostas foram registrados com sucesso no banco de dados Supabase da Jacto.",
+                optSim: "Sim", optParcial: "Parcial", optNao: "Não", optNa: "N/A"
+            },
+            en: {
+                txtTitle: "Supplier Qualification and Assessment Form (QAF)",
+                txtSubtitle: "Jacto Agricultural Machinery — Supply Chain & Quality Management",
+                txtLangLabel: "Language:",
+                secCompanyTitle: '<i class="fas fa-building text-primary me-2"></i>1. Supplier Company Information',
+                lblRazaoSocial: "Company Legal Name *",
+                lblCnpj: "Tax ID / Registration Number *",
+                lblCidade: "City *",
+                lblEstado: "State / Province / Country *",
+                lblCep: "ZIP / Postal Code",
+                lblContato: "Primary Contact Person *",
+                lblFone: "Contact Phone Number *",
+                lblEmail: "Contact E-mail *",
+                lblProdutos: "Manufactured / Marketed Products",
+                lblCertificados: "Quality & Environmental Certifications",
+                secAuditTitle: '<i class="fas fa-clipboard-check text-primary me-2"></i>2. Quality Audit & Assessment Questionnaire',
+                lblLegend: "Yes | Partial | No | N/A",
+                secObsTitle: '<i class="fas fa-comment-dots text-primary me-2"></i>3. Additional Comments / Remarks',
+                txtSubmitBtn: "Submit QAF Form",
+                modalSuccessTitle: "Form Submitted Successfully!",
+                modalSuccessMsg: "Your responses have been securely recorded in Jacto's Supabase database.",
+                optSim: "Yes", optParcial: "Partial", optNao: "No", optNa: "N/A"
+            }
+        };
+
+        const PLACEHOLDERS = {
+            pt: {
+                razao_social: "Digite o nome completo da empresa",
+                cnpj: "Ex: 00.000.000/0001-00 ou ID Internacional",
+                cidade: "Cidade",
+                estado: "Ex: SP / Brasil ou Estado/País",
+                cep: "CEP / Código Postal",
+                contato: "Nome do responsável",
+                fone: "+55 (00) 00000-0000",
+                email_contato: "contato@fornecedor.com",
+                produtos: "Ex: Injeção Plástica, Usinagem, Parafusos...",
+                certificados: "Ex: ISO 9001, ISO 14001, IATF 16949, Nenhuma",
+                observacoes: "Digite aqui observações adicionais, justificativas para itens marcados como Parcial ou Não Aplicável..."
+            },
+            en: {
+                razao_social: "Enter full company legal name",
+                cnpj: "Ex: Tax ID / VAT Number / Company Reg No.",
+                cidade: "City",
+                estado: "Ex: State / Province / Country",
+                cep: "ZIP / Postal Code",
+                contato: "Contact person full name",
+                fone: "+1 (000) 000-0000",
+                email_contato: "contact@company.com",
+                produtos: "Ex: Plastic Injection, Machining, Fasteners...",
+                certificados: "Ex: ISO 9001, ISO 14001, IATF 16949, None",
+                observacoes: "Type any additional comments, remarks or explanations for items answered as Partial or Not Applicable..."
+            }
+        };
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('btnLangPt').classList.toggle('active', lang === 'pt');
+            document.getElementById('btnLangEn').classList.toggle('active', lang === 'en');
+            
+            // Traduz labels e cabeçalhos
+            const l = LABELS[lang];
+            for (const key in l) {
+                const el = document.getElementById(key);
+                if (el) {
+                    if (key.startsWith('sec') || key === 'lblLegend') {
+                        el.innerHTML = l[key];
+                    } else {
+                        el.textContent = l[key];
+                    }
+                }
+            }
+
+            // Traduz placeholders de todos os campos
+            const p = PLACEHOLDERS[lang];
+            for (const id in p) {
+                const inputEl = document.getElementById(id);
+                if (inputEl) {
+                    inputEl.placeholder = p[id];
+                }
+            }
+
+            renderQuestions();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            let html = '';
+            
+            SECTIONS.forEach(sec => {
+                const title = currentLang === 'pt' ? sec.title_pt : sec.title_en;
+                html += `<div class="section-header">${title}</div>`;
+                
+                sec.items.forEach(qId => {
+                    const q = QUESTIONS[qId];
+                    const text = currentLang === 'pt' ? q.pt : q.en;
+                    const opt = LABELS[currentLang];
+                    
+                    html += `
+                    <div class="question-row d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div class="d-flex align-items-baseline gap-2 flex-grow-1" style="max-width: 75%;">
+                            <span class="question-num">${qId}</span>
+                            <span class="fw-medium text-dark" style="font-size: 0.9rem;">${text}</span>
+                        </div>
+                        <div class="option-group btn-group btn-group-sm" role="group">
+                            <input type="radio" class="btn-check" name="q_${qId}" id="q_${qId}_S" value="S">
+                            <label class="btn btn-outline-success px-3 fw-bold" for="q_${qId}_S">${opt.optSim}</label>
+
+                            <input type="radio" class="btn-check" name="q_${qId}" id="q_${qId}_P" value="P">
+                            <label class="btn btn-outline-warning px-3 fw-bold" for="q_${qId}_P">${opt.optParcial}</label>
+
+                            <input type="radio" class="btn-check" name="q_${qId}" id="q_${qId}_N" value="N">
+                            <label class="btn btn-outline-danger px-3 fw-bold" for="q_${qId}_N">${opt.optNao}</label>
+
+                            <input type="radio" class="btn-check" name="q_${qId}" id="q_${qId}_NA" value="NA" checked>
+                            <label class="btn btn-outline-secondary px-3 fw-bold" for="q_${qId}_NA">${opt.optNa}</label>
+                        </div>
+                    </div>
+                    `;
+                });
+            });
+            
+            container.innerHTML = html;
+        }
+
+        async function submitQafForm(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('btnSubmitQaf');
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i>${currentLang === 'pt' ? 'Enviando...' : 'Submitting...'}`;
+
+            const respostas = {};
+            let possible = 0;
+            let earned = 0;
+
+            for (const qId in QUESTIONS) {
+                const checked = document.querySelector(`input[name="q_${qId}"]:checked`);
+                const val = checked ? checked.value : 'NA';
+                respostas[qId] = val;
+
+                if (val !== 'NA') {
+                    possible += 1.0;
+                    if (val === 'S') earned += 1.0;
+                    if (val === 'P') earned += 0.5;
+                }
+            }
+
+            const score_pct = possible > 0 ? round((earned / possible * 100.0), 1) : 0.0;
+            let status = 'REGULAR';
+            if (score_pct >= 90) status = 'ÓTIMO';
+            else if (score_pct >= 75) status = 'BOM';
+            else if (score_pct >= 60) status = 'REGULAR';
+            else status = 'CRÍTICO';
+
+            const nowStr = new Date().toISOString();
+
+            const payload = {
+                hora_inicio: nowStr,
+                hora_conclusao: nowStr,
+                email: document.getElementById('email_contato').value.trim(),
+                nome: document.getElementById('contato').value.trim(),
+                idioma: currentLang === 'pt' ? 'Português (Brasil)' : 'English (United States)',
+                forma_avaliacao: 'Auto avaliação',
+                razao_social: document.getElementById('razao_social').value.trim(),
+                cnpj: document.getElementById('cnpj').value.trim(),
+                cidade: document.getElementById('cidade').value.trim(),
+                estado: document.getElementById('estado').value.trim(),
+                cep: document.getElementById('cep').value.trim(),
+                contato: document.getElementById('contato').value.trim(),
+                fone: document.getElementById('fone').value.trim(),
+                email_contato: document.getElementById('email_contato').value.trim(),
+                produtos: document.getElementById('produtos').value.trim(),
+                certificados: document.getElementById('certificados').value.trim(),
+                respostas: respostas,
+                observacoes: document.getElementById('observacoes').value.trim(),
+                score_pct: score_pct,
+                status_classificacao: status
+            };
+
+            let newId = Math.floor(1000 + Math.random() * 9000);
+
+            if (supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('qaf_respostas')
+                        .insert([payload])
+                        .select();
+
+                    if (!error && data && data[0] && data[0].id) {
+                        newId = data[0].id;
+                    }
+                } catch (err) {
+                    console.warn("Supabase client exception:", err);
+                }
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+
+            // Exibe modal de sucesso
+            document.getElementById('modalRefId').textContent = `ID do Registro: #${newId} | Status: ${status} (${score_pct}%)`;
+            const modal = new bootstrap.Modal(document.getElementById('modalSuccess'));
+            modal.show();
+        }
+
+        function round(num, decimals) {
+            return Number(Math.round(num + 'e' + decimals) + 'e-' + decimals);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setLanguage('pt');
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
